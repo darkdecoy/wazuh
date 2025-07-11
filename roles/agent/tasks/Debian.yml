@@ -4,6 +4,7 @@
     update_cache: true
     force_apt_get: true
     cache_valid_time: 3600
+  become: true
 
 - name: Debian/Ubuntu | Install ca-certificates and gnupg
   ansible.builtin.apt:
@@ -21,6 +22,7 @@
       - apt-transport-https
       - acl
     state: present
+  become: true
   register: wazuh_agent_ca_package_install
   until: wazuh_agent_ca_package_install is succeeded
   when: not (ansible_distribution == "Debian" and ansible_distribution_major_version in ['11'])
@@ -43,12 +45,14 @@
   ansible.builtin.get_url:
     url: "{{ wazuh_agent_config.repo.gpg }}"
     dest: "{{ wazuh_agent_config.repo.path }}"
+  become: true
   when:
     - not (ansible_distribution == "Ubuntu" and ansible_distribution_major_version | int == 14)
     - not wazuh_custom_packages_installation_agent_enabled
 
 - name: Debian/Ubuntu | Import Wazuh GPG key
   ansible.builtin.command: "gpg --no-default-keyring --keyring gnupg-ring:{{ wazuh_agent_config.repo.keyring_path }} --import {{ wazuh_agent_config.repo.path }}"
+  become: true
   when:
     - not (ansible_distribution == "Ubuntu" and ansible_distribution_major_version | int == 14)
     - not wazuh_custom_packages_installation_agent_enabled
@@ -59,6 +63,7 @@
   ansible.builtin.file:
     path: "{{ wazuh_agent_config.repo.keyring_path }}"
     mode: '0644'
+  become: true
   when:
     - not (ansible_distribution == "Ubuntu" and ansible_distribution_major_version | int == 14)
     - not wazuh_custom_packages_installation_agent_enabled
@@ -106,6 +111,7 @@
       - libopenscap8
       - xsltproc
     state: present
+  become: true
   when: wazuh_agent_config.openscap.disable == 'no'
   tags:
     - init
