@@ -161,31 +161,6 @@ wazuh_manager_vulnerability_detection:
   enabled: 'yes'
   index_status: 'yes'
   feed_update_interval: '60m'
-  run_on_start: "yes"
-  providers:
-    - enabled: "no"
-      os:
-        - "trusty"
-        - "xenial"
-        - "bionic"
-      update_interval: "1h"
-      name: '"canonical"'
-    - enabled: "no"
-      os:
-        - "wheezy"
-        - "stretch"
-        - "jessie"
-        - "buster"
-      update_interval: "1h"
-      name: '"debian"'
-    - enabled: "no"
-      update_from_year: "2010"
-      update_interval: "1h"
-      name: '"redhat"'
-    - enabled: "no"
-      update_from_year: "2010"
-      update_interval: "1h"
-      name: '"nvd"'
 
 wazuh_manager_indexer:
   enabled: 'yes'
