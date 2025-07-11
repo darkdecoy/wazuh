@@ -1,5 +1,5 @@
 - name: Install Postfix and its dependencies
-  package:
+  ansible.builtin.package:
     name:
       - postfix
       - mailutils
@@ -13,7 +13,7 @@
     - init
 
 - name: Install Postfix and its dependencies
-  package:
+  ansible.builtin.package:
     name:
       - postfix
       - s-nail
@@ -26,7 +26,7 @@
     - init
 
 - name: Configure Postfix
-  blockinfile:
+  ansible.builtin.blockinfile:
     path: /etc/postfix/main.cf
     block: |
       relayhost = [{{ wazuh_manager_external_email_smtp_server }}]:{{ wazuh_manager_external_email_smtp_port }}
@@ -36,40 +36,41 @@
       smtp_use_tls = {{ wazuh_manager_external_email_smtp_use_tls }}
     owner: root
     group: root
-    mode: 0770
+    mode: "0770"
   become: true
 
 - name: Configure postfix relay username and password
-  template:
+  ansible.builtin.template:
     src: sasl_passwd.j2
     dest: /etc/postfix/sasl_passwd
     owner: root
     group: root
-    mode: 0770
+    mode: "0770"
   become: true
 
 - name: Create postfix database
-  command: postmap /etc/postfix/sasl_passwd
+  ansible.builtin.command: postmap /etc/postfix/sasl_passwd
+  changed_when: false
   become: true
 
 - name: Set file permissions for config file
-  file:
+  ansible.builtin.file:
     path: /etc/postfix/sasl_passwd
     owner: root
     group: root
-    mode: 0600
+    mode: "0600"
   become: true
 
 - name: Set file permissions for database
-  file:
+  ansible.builtin.file:
     path: /etc/postfix/sasl_passwd.db
     owner: root
     group: root
-    mode: 0600
+    mode: "0600"
   become: true
 
 - name: Restart postfix
-  service:
+  ansible.builtin.service:
     name: postfix
     state: restarted
     enabled: true
@@ -83,4 +84,3 @@
     to: "{{ item }}"
   become: true
   loop: "{{ wazuh_manager_mailto }}"
-
