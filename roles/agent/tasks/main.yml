@@ -1,4 +1,5 @@
 ---
+
 - include_vars: repo_vars.yml
 
 - include_vars: repo.yml
@@ -11,14 +12,17 @@
   when: packages_repository == 'staging'
 
 - name: Overlay wazuh_agent_config on top of defaults
-  set_fact:
-    wazuh_agent_config: "{{ wazuh_agent_config_defaults | combine(config_layer, recursive=True) }}"
+  ansible.builtin.set_fact:
+    wazuh_agent_config: '{{ wazuh_agent_config_defaults | combine(config_layer, recursive=True) }}'
   vars:
-    config_layer: "{{ wazuh_agent_config | default({}) }}"
+    config_layer: '{{ wazuh_agent_config | default({}) }}'
   when: wazuh_agent_config_overlay | bool
 
-- include_tasks: "Windows.yml"
+- ansible.builtin.include_tasks: "Windows.yml"
   when: ansible_os_family == "Windows"
 
-- include_tasks: "Linux.yml"
+- ansible.builtin.include_tasks: "Linux.yml"
   when: ansible_system == "Linux"
+
+- ansible.builtin.include_tasks: "macOS.yml"
+  when: ansible_system == "Darwin"

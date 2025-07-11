@@ -13,7 +13,7 @@ SPECIAL_CHARS = "@$!%*?&-_"
 
 
 try:
-    from wazuh.rbac.orm import create_rbac_db
+    from wazuh.rbac.orm import check_database_integrity
     from wazuh.security import (
         create_user,
         get_users,
@@ -41,21 +41,19 @@ def db_roles():
     roles_result = get_roles()
     return {role["name"]: role["id"] for role in roles_result.affected_items}
 
-
 def disable_user(uid):
     random_pass = "".join(
-        random.choices(
-            string.ascii_uppercase
-            + string.ascii_lowercase
-            + string.digits
-            + SPECIAL_CHARS,
-            k=8,
-        )
-    )
+                random.choices(
+                    string.ascii_uppercase
+                    + string.ascii_lowercase
+                    + string.digits
+                    + SPECIAL_CHARS,
+                    k=8,
+                )
+            )
     # assure there must be at least one character from each group
-    random_pass = random_pass + ''.join([random.choice(chars) for chars in [
-                                        string.ascii_lowercase, string.digits, string.ascii_uppercase, SPECIAL_CHARS]])
-    random_pass = ''.join(random.sample(random_pass, len(random_pass)))
+    random_pass = random_pass + ''.join([random.choice(chars) for chars in [string.ascii_lowercase, string.digits, string.ascii_uppercase, SPECIAL_CHARS]])
+    random_pass = ''.join(random.sample(random_pass,len(random_pass)))
     update_user(
         user_id=[
             str(uid),
@@ -71,7 +69,7 @@ if __name__ == "__main__":
     username, password = read_user_file()
 
     # create RBAC database
-    create_rbac_db()
+    check_database_integrity()
 
     initial_users = db_users()
     if username not in initial_users:
@@ -99,6 +97,6 @@ if __name__ == "__main__":
             password=password,
         )
     # disable unused default users
-    # for def_user in ['wazuh', 'wazuh-wui']:
+    #for def_user in ['wazuh', 'wazuh-wui']:
     #    if def_user != username:
     #        disable_user(initial_users[def_user])

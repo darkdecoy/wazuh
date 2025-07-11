@@ -1,6 +1,6 @@
 ---
 - name: Install Wazuh Agent from .deb packages
-  apt:
+  ansible.builtin.apt:
     deb: "{{ wazuh_custom_packages_installation_agent_deb_url }}"
     state: present
   become: true
@@ -9,9 +9,10 @@
     - wazuh_custom_packages_installation_agent_enabled
 
 - name: Install Wazuh Agent from .rpm packages | yum
-  yum:
+  ansible.builtin.yum:
     name: "{{ wazuh_custom_packages_installation_agent_rpm_url }}"
     state: present
+    lock_timeout: 200
   become: true
   when:
     - ansible_os_family|lower == "redhat"
@@ -20,7 +21,7 @@
     - not (ansible_distribution|lower == "redhat" and ansible_distribution_major_version >= "8")
 
 - name: Install Wazuh Agent from .rpm packages | dnf
-  dnf:
+  ansible.builtin.dnf:
     name: "{{ wazuh_custom_packages_installation_agent_rpm_url }}"
     state: present
   become: true

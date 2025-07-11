@@ -1,6 +1,247 @@
 # Change Log
 All notable changes to this project will be documented in this file.
 
+## [v4.12.0]
+
+### Added
+
+- Update to [Wazuh v4.12.0](https://github.com/wazuh/wazuh/blob/v4.12.0/CHANGELOG.md#v4120)
+
+### Changed
+
+- Standardize version file format ([#1553](https://github.com/wazuh/wazuh-ansible/pull/1553))
+- Implement minor changes for Wazuh ansible arm64 support ([#1518](https://github.com/wazuh/wazuh-ansible/pull/1518))
+- Use fixed version of Ubuntu-22.04 in GHA runners instead of latest version ([#1479](https://github.com/wazuh/wazuh-ansible/pull/1479)) \- (PR Checks Workflows)
+
+### Fixed
+
+- Add gnupg dependency to indexer, filebeat-oss, and dashboard roles ([#1623](https://github.com/wazuh/wazuh-ansible/pull/1623))
+- Update the Filebeat installation for arm64 to include revision ([#1616](https://github.com/wazuh/wazuh-ansible/pull/1616))
+
+### Deleted
+
+- None
+
+## [4.11.2]
+
+### Added
+
+- None
+
+### Changed
+
+- None
+
+### Fixed
+
+- None
+
+### Deleted
+
+- None
+
+## [4.11.1]
+
+### Added
+
+- None
+
+### Changed
+
+- None
+
+### Fixed
+
+- None
+
+### Deleted
+
+- None
+
+## [4.11.0]
+
+### Added
+
+- None
+
+### Changed
+
+- Add Yum lock timeout to Ansible task ([#1511](https://github.com/wazuh/wazuh-ansible/pull/1511))
+
+### Fixed
+
+- None
+
+### Deleted
+
+- None
+
+## [v4.10.1]
+
+### Added
+
+- Update to [Wazuh v4.10.1](https://github.com/wazuh/wazuh/blob/v4.10.1/CHANGELOG.md#v4101)
+
+## [v4.10.0]
+
+### Added
+
+- Update to [Wazuh v4.10.0](https://github.com/wazuh/wazuh/blob/v4.10.0/CHANGELOG.md#v4100)
+
+### Fixed
+
+- Fix cert gen tool version variable assignment ([#1443](https://github.com/wazuh/wazuh-ansible/pull/1443))
+
+## [v4.9.2]
+
+### Added
+
+- Update to [Wazuh v4.9.2](https://github.com/wazuh/wazuh/blob/v4.9.2/CHANGELOG.md#v492)
+
+## [v4.9.1]
+
+### Added
+
+- Update to [Wazuh v4.9.1](https://github.com/wazuh/wazuh/blob/v4.9.1/CHANGELOG.md#v491)
+
+## [v4.9.0]
+
+### Added
+
+- Update to [Wazuh v4.9.0](https://github.com/wazuh/wazuh/blob/v4.9.0/CHANGELOG.md#v490)
+
+## [v4.8.2]
+
+### Added
+
+- Update to [Wazuh v4.8.2](https://github.com/wazuh/wazuh/blob/v4.8.2/CHANGELOG.md#v482)
+
+## [v4.8.1]
+
+### Added
+
+- Update to [Wazuh v4.8.1](https://github.com/wazuh/wazuh/blob/v4.8.1/CHANGELOG.md#v481)
+
+## [v4.8.0]
+
+### Added
+
+- Update to [Wazuh v4.8.0](https://github.com/wazuh/wazuh/blob/v4.8.0/CHANGELOG.md#v480)
+
+## [v4.7.5]
+
+### Added
+
+- Update to [Wazuh v4.7.5](https://github.com/wazuh/wazuh/blob/v4.7.5/CHANGELOG.md#v475)
+
+## [v4.7.4]
+
+### Added
+
+- Update to [Wazuh v4.7.4](https://github.com/wazuh/wazuh/blob/v4.7.4/CHANGELOG.md#v473)
+
+## [v4.7.3]
+
+### Added
+
+- Update to [Wazuh v4.7.3](https://github.com/wazuh/wazuh/blob/v4.7.3/CHANGELOG.md#v473)
+
+## [v4.7.2]
+
+### Added
+
+- Update to [Wazuh v4.7.2](https://github.com/wazuh/wazuh/blob/v4.7.2/CHANGELOG.md#v472)
+
+## [v4.7.1]
+
+### Added
+
+- Update to [Wazuh v4.7.1](https://github.com/wazuh/wazuh/blob/v4.7.1/CHANGELOG.md#v471)
+
+## [v4.7.0]
+
+### Added
+
+- Update to [Wazuh v4.7.0](https://github.com/wazuh/wazuh/blob/v4.7.0/CHANGELOG.md#v470)
+
+## [v4.6.0]
+
+### Added
+
+- Update to [Wazuh v4.6.0](https://github.com/wazuh/wazuh/blob/v4.6.0/CHANGELOG.md#v460)
+
+## [v4.5.4]
+
+### Added
+
+- Update to [Wazuh v4.5.4](https://github.com/wazuh/wazuh/blob/v4.5.4/CHANGELOG.md#v454)
+
+## [v4.5.3]
+
+### Added
+
+- Update to [Wazuh v4.5.3](https://github.com/wazuh/wazuh/blob/v4.5.3/CHANGELOG.md#v453)
+
+## [v4.5.2]
+
+### Added
+
+- Update to [Wazuh v4.5.2](https://github.com/wazuh/wazuh/blob/v4.5.2/CHANGELOG.md#v452)
+
+## [v4.5.1]
+
+### Added
+
+- Update to [Wazuh v4.5.1](https://github.com/wazuh/wazuh/blob/v4.5.1/CHANGELOG.md#v451)
+
+## [v4.5.0]
+
+### Added
+
+- Update to [Wazuh v4.5.0](https://github.com/wazuh/wazuh/blob/v4.5.0/CHANGELOG.md#v450)
+
+## [v4.4.5]
+
+### Added
+
+- Update to [Wazuh v4.4.5](https://github.com/wazuh/wazuh/blob/v4.4.5/CHANGELOG.md#v445)
+
+## [v4.4.4]
+
+### Added
+
+- Update to [Wazuh v4.4.4](https://github.com/wazuh/wazuh/blob/v4.4.4/CHANGELOG.md#v444)
+
+## [v4.4.3]
+
+### Added
+
+- Update to [Wazuh v4.4.3](https://github.com/wazuh/wazuh/blob/v4.4.3/CHANGELOG.md#v443)
+
+## [v4.4.2]
+
+### Added
+
+- Update to [Wazuh v4.4.2](https://github.com/wazuh/wazuh/blob/v4.4.2/CHANGELOG.md#v442)
+
+## [v4.4.1]
+
+### Added
+
+- Update to [Wazuh v4.4.1](https://github.com/wazuh/wazuh/blob/v4.4.1/CHANGELOG.md#v441)
+
+## [v4.4.0]
+
+### Added
+
+- Update to [Wazuh v4.4.0](https://github.com/wazuh/wazuh/blob/v4.4.0/CHANGELOG.md#v440)
+
+## [v4.3.11]
+
+### Added
+
+- Update to [Wazuh v4.3.11](https://github.com/wazuh/wazuh/blob/v4.3.11/CHANGELOG.md#v4311)
+
 ## [v4.3.10]
 
 ### Added
@@ -66,6 +307,12 @@ All notable changes to this project will be documented in this file.
 ### Added
 
 - Update to [Wazuh v4.3.0](https://github.com/wazuh/wazuh/blob/v4.3.0/CHANGELOG.md#v430)
+
+## [v4.2.6]
+
+### Added
+
+- Update to [Wazuh v4.2.6](https://github.com/wazuh/wazuh/blob/v4.2.6/CHANGELOG.md#v426)
 
 ## [v4.2.5]
 

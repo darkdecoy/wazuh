@@ -1,11 +1,11 @@
 ---
 # Cluster Settings
-indexer_version: 4.3.10
+indexer_version: 4.12.0
 
 single_node: false
 indexer_node_name: node-1
 indexer_cluster_name: wazuh
-indexer_network_host: "0.0.0.0"
+indexer_network_host: '0.0.0.0'
 
 indexer_node_master: true
 indexer_node_data: true
@@ -17,7 +17,8 @@ indexer_cluster_nodes:
 indexer_discovery_nodes:
   - 127.0.0.1
 
-local_certs_path: "{{ playbook_dir }}/files/indexer/certificates"
+local_certs_root: "{{ playbook_dir }}"
+local_certs_path: "{{ local_certs_root }}/files/indexer/certificates"
 
 # Minimum master nodes in cluster, 2 for 3 nodes Wazuh indexer cluster
 minimum_master_nodes: 2
@@ -26,9 +27,9 @@ minimum_master_nodes: 2
 # Example es1.example.com, es2.example.com
 domain_name: wazuh.com
 
-indexer_sec_plugin_conf_path: /usr/share/wazuh-indexer/plugins/opensearch-security/securityconfig
+indexer_sec_plugin_conf_path: /etc/wazuh-indexer/opensearch-security
 indexer_sec_plugin_tools_path: /usr/share/wazuh-indexer/plugins/opensearch-security/tools
-indexer_conf_path: /etc/wazuh-indexer/
+indexer_conf_path: /etc/wazuh-indexer
 indexer_index_path: /var/lib/wazuh-indexer/
 
 # Security password
