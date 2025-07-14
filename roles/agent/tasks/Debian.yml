@@ -112,7 +112,21 @@
       - xsltproc
     state: present
   become: true
-  when: wazuh_agent_config.openscap.disable == 'no'
+  when: wazuh_agent_config.openscap.disable == 'no' and (ansible_distribution == "Ubuntu" and ansible_distribution_major_version | int <= 22)
+  tags:
+    - init
+  register: wazuh_agent_OpenScap_package_install
+  until: wazuh_agent_OpenScap_package_install is succeeded
+
+- name: Debian/Ubuntu | Install OpenScap
+  ansible.builtin.apt:
+    name:
+      - openscap-common
+      - libopenscap25t64
+      - xsltproc
+    state: present
+  become: true
+  when: wazuh_agent_config.openscap.disable == 'no' and (ansible_distribution == "Ubuntu" and ansible_distribution_major_version | int == 24)
   tags:
     - init
   register: wazuh_agent_OpenScap_package_install
