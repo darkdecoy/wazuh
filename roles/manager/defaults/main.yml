@@ -210,6 +210,15 @@ wazuh_manager_syscheck:
   sync_max_interval: '1h'
   sync_max_eps: 10
 
+wazuh_manager_healthcheck:
+  disable: "no"
+  tag: "healthcheck"
+  command: /opt/wazuh_healthcheck.sh
+  interval: 12h
+  ignore_output: "yes"
+  run_on_start: "yes"
+  timeout: 0
+
 ## Command
 wazuh_manager_commands:
   - name: 'disable-account'
@@ -249,6 +258,8 @@ wazuh_manager_localfiles:
       frequency: '360'
     - format: 'syslog'
       location: "{{ wazuh_dir }}/logs/active-responses.log"
+    - format: "json"
+      location: "/tmp/health.json"
   debian:
     - format: 'syslog'
       location: '/var/log/auth.log'
