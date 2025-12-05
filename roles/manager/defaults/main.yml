@@ -1,13 +1,13 @@
 ---
-wazuh_manager_version: 4.12.0
+wazuh_manager_version: 4.13.0
 
 wazuh_manager_fqdn: "wazuh-server"
 wazuh_manager_package_state: present
 
 # Custom packages installation
 wazuh_custom_packages_installation_manager_enabled: false
-wazuh_custom_packages_installation_manager_deb_url: "https://s3-us-west-1.amazonaws.com/packages-dev.wazuh.com/"
-wazuh_custom_packages_installation_manager_rpm_url: "https://s3-us-west-1.amazonaws.com/packages-dev.wazuh.com/"
+wazuh_custom_packages_installation_manager_deb_url: "https://packages-dev.wazuh.com/"
+wazuh_custom_packages_installation_manager_rpm_url: "https://packages-dev.wazuh.com/"
 
 wazuh_dir: "/var/ossec"
 
@@ -312,6 +312,9 @@ wazuh_manager_ruleset:
     - 'audit-keys'
     - 'security-eventchannel'
     - 'amazon/aws-eventnames'
+    - 'malicious-ioc/malicious-ip'
+    - 'malicious-ioc/malicious-domains'
+    - 'malicious-ioc/malware-hashes'
 
 wazuh_manager_rule_exclude:
   - '0215-policy_rules.xml'

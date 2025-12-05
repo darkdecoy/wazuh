@@ -1,7 +1,7 @@
 ---
 filebeat_version: 7.10.2
 
-wazuh_template_branch: v4.12.0
+wazuh_template_branch: v4.13.0
 
 filebeat_node_name: node-1
 
@@ -14,13 +14,9 @@ filebeat_module_destination: /usr/share/filebeat/module
 filebeat_module_folder: /usr/share/filebeat/module/wazuh
 indexer_security_user: admin
 indexer_security_password: changeme
-
 # Security plugin
 filebeat_security: true
 filebeat_ssl_dir: /etc/pki/filebeat
 
-filebeat_custom_config: ""
-
 # Local path to store the generated certificates (Opensearch security plugin)
-local_certs_root: "{{ playbook_dir }}"
-local_certs_path: "{{ local_certs_root }}/files/indexer/certificates"
+local_certs_path: "{{ playbook_dir }}/indexer/certificates"

@@ -1,5 +1,5 @@
 ---
-wazuh_agent_version: 4.12.0
+wazuh_agent_version: 4.13.0
 
 # Custom packages installation
 
@@ -29,7 +29,7 @@ wazuh_winagent_config:
   auth_path: C:\Program Files\ossec-agent\agent-auth.exe
   # Adding quotes to auth_path_x86 since win_shell outputs error otherwise
   auth_path_x86: C:\'Program Files (x86)'\ossec-agent\agent-auth.exe
-  check_sha512: true
+  check_sha512: True
 
 # macOS deployment
 wazuh_macos_config:
