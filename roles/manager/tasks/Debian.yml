@@ -1,6 +1,6 @@
 ---
 - name: Debian/Ubuntu | Install apt-transport-https, ca-certificates and acl
-  ansible.builtin.apt:
+  apt:
     name:
       - apt-transport-https
       - ca-certificates
@@ -14,7 +14,7 @@
 
 - name: Debian/Ubuntu | Installing Wazuh repository key (Ubuntu 14)
   become: true
-  ansible.builtin.shell: |
+  shell: |
     set -o pipefail
     curl -s {{ wazuh_manager_config.repo.gpg }} | apt-key add -
   args:
@@ -27,7 +27,7 @@
     - not wazuh_custom_packages_installation_manager_enabled
 
 - name: Debian/Ubuntu | Download Wazuh repository key
-  ansible.builtin.get_url:
+  get_url:
     url: "{{ wazuh_manager_config.repo.gpg }}"
     dest: "{{ wazuh_manager_config.repo.path }}"
   when:
@@ -35,7 +35,7 @@
     - not wazuh_custom_packages_installation_manager_enabled
 
 - name: Debian/Ubuntu | Import Wazuh GPG key
-  ansible.builtin.command: "gpg --no-default-keyring --keyring gnupg-ring:{{ wazuh_manager_config.repo.keyring_path }} --import {{ wazuh_manager_config.repo.path }}"
+  command: "gpg --no-default-keyring --keyring gnupg-ring:{{ wazuh_manager_config.repo.keyring_path }} --import {{ wazuh_manager_config.repo.path }}"
   when:
     - not (ansible_distribution == "Ubuntu" and ansible_distribution_major_version | int == 14)
     - not wazuh_custom_packages_installation_manager_enabled
@@ -43,7 +43,7 @@
     creates: "{{ wazuh_manager_config.repo.keyring_path }}"
 
 - name: Debian/Ubuntu | Set permissions for Wazuh GPG key
-  ansible.builtin.file:
+  file:
     path: "{{ wazuh_manager_config.repo.keyring_path }}"
     mode: '0644'
   when:
@@ -51,7 +51,7 @@
     - not wazuh_custom_packages_installation_manager_enabled
 
 - name: Debian/Ubuntu | Add Wazuh repositories
-  ansible.builtin.apt_repository:
+  apt_repository:
     filename: wazuh_repo
     repo: "{{ wazuh_manager_config.repo.apt }}"
     state: present
@@ -61,11 +61,11 @@
     - not wazuh_custom_packages_installation_manager_enabled
 
 - name: Debian/Ubuntu | Set Distribution CIS filename for Debian/Ubuntu
-  ansible.builtin.set_fact:
+  set_fact:
     cis_distribution_filename: cis_debian_linux_rcl.txt
 
 - name: Debian/Ubuntu | Install OpenJDK-8 repo
-  ansible.builtin.apt_repository:
+  apt_repository:
     repo: 'ppa:openjdk-r/ppa'
     state: present
     update_cache: true
@@ -75,17 +75,14 @@
 - when:
     - wazuh_manager_config.cis_cat.disable == 'no'
     - wazuh_manager_config.cis_cat.install_java == 'yes'
-  tags:
-    - init
   block:
     - name: Debian/Ubuntu | Install OpenJDK 1.8
-      ansible.builtin.apt:
-        name: openjdk-8-jre
-        state: present
-        cache_valid_time: 3600
+      apt: name=openjdk-8-jre state=present cache_valid_time=3600
+  tags:
+    - init
 
 - name: Debian/Ubuntu | Install OpenScap
-  ansible.builtin.apt:
+  apt:
     name:
       - libopenscap8
       - xsltproc
@@ -99,7 +96,7 @@
     - init
 
 - name: Debian/Ubuntu | Get OpenScap installed version
-  ansible.builtin.shell: "dpkg-query --showformat='${Version}' --show libopenscap8"
+  shell: "dpkg-query --showformat='${Version}' --show libopenscap8"
   when: wazuh_manager_config.openscap.disable == 'no'
   register: openscap_version
   changed_when: false
@@ -107,7 +104,7 @@
     - config
 
 - name: Debian/Ubuntu | Check OpenScap version
-  ansible.builtin.shell: "dpkg --compare-versions '{{ openscap_version.stdout }}' '>=' '1.2'; echo $?"
+  shell: "dpkg --compare-versions '{{ openscap_version.stdout }}' '>=' '1.2'; echo $?"
   when: wazuh_manager_config.openscap.disable == 'no'
   register: openscap_version_valid
   changed_when: false
@@ -115,7 +112,7 @@
     - config
 
 - name: Debian/Ubuntu | Install wazuh-manager
-  ansible.builtin.apt:
+  apt:
     name:
       - "wazuh-manager={{ wazuh_manager_version }}-*"
     state: present
@@ -123,6 +120,6 @@
   when:
     - not wazuh_custom_packages_installation_manager_enabled
 
-- ansible.builtin.include_tasks: "installation_from_custom_packages.yml"
+- include_tasks: "installation_from_custom_packages.yml"
   when:
     - wazuh_custom_packages_installation_manager_enabled
