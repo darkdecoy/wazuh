@@ -10,8 +10,8 @@ wazuh_custom_packages_installation_agent_rpm_url: ""
 wazuh_agent_yum_lock_timeout: 30
 
 # We recommend the use of ansible-vault to protect Wazuh, api, agentless and authd credentials.
-api_pass: wazuh
-authd_pass: ''
+wazuh_api_pass: wazuh
+wazuh_authd_pass: ''
 
 wazuh_api_reachable_from_agent: true
 wazuh_profile_centos: 'centos, centos7, centos7.6'
@@ -29,7 +29,7 @@ wazuh_winagent_config:
   auth_path: C:\Program Files\ossec-agent\agent-auth.exe
   # Adding quotes to auth_path_x86 since win_shell outputs error otherwise
   auth_path_x86: C:\'Program Files (x86)'\ossec-agent\agent-auth.exe
-  check_sha512: True
+  check_sha512: true
 
 # macOS deployment
 wazuh_macos_config:
@@ -327,13 +327,18 @@ wazuh_agent_localfiles:
       query:
         type: 'trace,log,activity'
         level: 'info'
-        value: (process == "sudo") or (process == "sessionlogoutd" and message contains "logout is complete.") or (process == "sshd") or (process == "tccd" and message contains "Update Access Record") or (message contains "SessionAgentNotificationCenter") or (process == "screensharingd" and message contains "Authentication") or (process == "securityd" and eventMessage contains "Session" and subsystem == "com.apple.securityd")
+        value: >
+          (process == "sudo") or (process == "sessionlogoutd" and message contains "logout is complete.") or (process == "sshd") or (process == "tccd"
+          and message contains "Update Access Record") or (message contains "SessionAgentNotificationCenter") or (process == "screensharingd"
+          and message contains "Authentication") or (process == "securityd" and eventMessage contains "Session" and subsystem == "com.apple.securityd")
   windows:
     - format: 'eventlog'
       location: 'Application'
     - format: 'eventchannel'
       location: 'Security'
-      query: 'Event/System[EventID != 5145 and EventID != 5156 and EventID != 5447 and EventID != 4656 and EventID != 4658 and EventID != 4663 and EventID != 4660 and EventID != 4670 and EventID != 4690 and EventID != 4703 and EventID != 4907]'
+      query: >
+        Event/System[EventID != 5145 and EventID != 5156 and EventID != 5447 and EventID != 4656 and EventID != 4658 and EventID != 4663 and EventID != 4660
+        and EventID != 4670 and EventID != 4690 and EventID != 4703 and EventID != 4907]
     - format: 'eventlog'
       location: 'System'
     - format: 'syslog'

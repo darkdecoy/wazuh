@@ -45,13 +45,17 @@
   ansible.builtin.get_url:
     url: "{{ wazuh_agent_config.repo.gpg }}"
     dest: "{{ wazuh_agent_config.repo.path }}"
+    owner: root
+    group: root
+    mode: "0660"
   become: true
   when:
     - not (ansible_distribution == "Ubuntu" and ansible_distribution_major_version | int == 14)
     - not wazuh_custom_packages_installation_agent_enabled
 
 - name: Debian/Ubuntu | Import Wazuh GPG key
-  ansible.builtin.command: "gpg --no-default-keyring --keyring gnupg-ring:{{ wazuh_agent_config.repo.keyring_path }} --import {{ wazuh_agent_config.repo.path }}"
+  ansible.builtin.command: >
+    "gpg --no-default-keyring --keyring gnupg-ring:{{ wazuh_agent_config.repo.keyring_path }} --import {{ wazuh_agent_config.repo.path }}"
   become: true
   when:
     - not (ansible_distribution == "Ubuntu" and ansible_distribution_major_version | int == 14)
@@ -92,9 +96,12 @@
   when:
     - (ansible_distribution == "Ubuntu" and ansible_distribution_major_version | int == 14)
 
-- when:
+- name: Debian/Ubuntu | Install OpenJDK
+  when:
     - wazuh_agent_config.cis_cat.disable == 'no'
     - wazuh_agent_config.cis_cat.install_java == 'yes'
+  tags:
+    - init
   block:
     - name: Debian/Ubuntu | Install OpenJDK 1.8
       ansible.builtin.apt:
@@ -115,8 +122,8 @@
   when: wazuh_agent_config.openscap.disable == 'no' and (ansible_distribution == "Ubuntu" and ansible_distribution_major_version | int <= 22)
   tags:
     - init
-  register: wazuh_agent_OpenScap_package_install
-  until: wazuh_agent_OpenScap_package_install is succeeded
+  register: wazuh_agent_openscap_package_install
+  until: wazuh_agent_openscap_package_install is succeeded
 
 - name: Debian/Ubuntu | Install OpenScap
   ansible.builtin.apt:
@@ -129,8 +136,8 @@
   when: wazuh_agent_config.openscap.disable == 'no' and (ansible_distribution == "Ubuntu" and ansible_distribution_major_version | int == 24)
   tags:
     - init
-  register: wazuh_agent_OpenScap_package_install
-  until: wazuh_agent_OpenScap_package_install is succeeded
+  register: wazuh_agent_openscap_package_install
+  until: wazuh_agent_openscap_package_install is succeeded
 
 - name: Debian/Ubuntu | Get OpenScap installed version
   ansible.builtin.shell: "dpkg-query --showformat='${Version}' --show libopenscap8"

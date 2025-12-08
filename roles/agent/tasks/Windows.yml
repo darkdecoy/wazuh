@@ -38,7 +38,8 @@
     - wazuh_winagent_config.check_sha512
 
 - name: Extract checksum from SHA512 file
-  ansible.windows.win_shell: Get-Content "{{ wazuh_winagent_config.download_dir }}{{ wazuh_winagent_package_name }}.sha512" | ForEach-Object { $_.Split(' ')[0] }
+  ansible.windows.win_shell: >
+    Get-Content "{{ wazuh_winagent_config.download_dir }}{{ wazuh_winagent_package_name }}.sha512" | ForEach-Object { $_.Split(' ')[0] }
   register: extracted_checksum
   when:
     - wazuh_winagent_config.check_sha512
@@ -72,7 +73,7 @@
     -m {{ wazuh_agent_authd.registration_address }}
     -p {{ wazuh_agent_authd.port }}
     {% if wazuh_agent_authd.agent_name is not none %}-A {{ wazuh_agent_authd.agent_name }} {% endif %}
-    {% if authd_pass | length > 0 %} -P {{ authd_pass }}{% endif %}
+    {% if wazuh_authd_pass | length > 0 %} -P {{ wazuh_authd_pass }}{% endif %}
   register: agent_auth_output
   notify: Windows | Restart Wazuh Agent
   when:
@@ -88,7 +89,7 @@
     state: directory
 
 - name: Windows | Installing agent configuration (ossec.conf)
-  ansible.builtin.template: # noqa 208
+  ansible.builtin.template: # noqa risky-file-permissions
     src: var-ossec-etc-ossec-agent.conf.j2
     dest: "{{ wazuh_agent_win_path }}ossec.conf"
   notify: Windows | Restart Wazuh Agent
@@ -96,7 +97,7 @@
     - config
 
 - name: Windows | Installing local_internal_options.conf
-  ansible.builtin.template:
+  ansible.builtin.template: # noqa risky-file-permissions
     src: var-ossec-etc-local-internal-options.conf.j2
     dest: "{{ wazuh_agent_win_path }}local_internal_options.conf"
   notify: Windows | Restart Wazuh Agent

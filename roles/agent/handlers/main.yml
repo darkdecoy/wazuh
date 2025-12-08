@@ -1,5 +1,5 @@
 ---
-- name: restart wazuh-agent
+- name: Restart wazuh-agent
   ansible.builtin.service:
     name: wazuh-agent
     state: restarted
@@ -11,5 +11,6 @@
     start_mode: auto
     state: restarted
 
-- name: macOS | Restart Wazuh Agent
+- name: MacOS | Restart Wazuh Agent
   ansible.builtin.command: /Library/Ossec/bin/wazuh-control restart
+  changed_when: false

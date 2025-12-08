@@ -2,6 +2,7 @@
 - name: macOS | Check architecture
   ansible.builtin.command: "/usr/bin/uname -m"
   register: uname_result
+  changed_when: false
 
 - name: macOS | Set architecture variable
   ansible.builtin.set_fact:
@@ -18,7 +19,7 @@
   register: wazuh_package_downloaded
 
 - name: macOS | Download Wazuh Agent package
-  ansible.builtin.get_url:
+  ansible.builtin.get_url: # noqa risky-file-permissions
     url: "{{ wazuh_macos_package_url }}"
     dest: "{{ wazuh_macos_config.download_dir }}"
   register: download_result
@@ -33,6 +34,7 @@
 - name: macOS | Install Agent if not already installed
   ansible.builtin.command: "installer -pkg {{ wazuh_macos_config.download_dir }}{{ wazuh_macos_package_name }} -target /"
   register: install_result
+  changed_when: false
 
 - name: macOS | Check if client.keys exists
   ansible.builtin.stat:
@@ -42,6 +44,12 @@
     - config
 
 - name: macOS | Agent registration via authd
+  when:
+    - wazuh_agent_authd.enable | bool
+    - wazuh_agent_config.enrollment.enabled != 'yes'
+  tags:
+    - config
+    - authd
   block:
     - name: macOS | Register agent (via authd)
       ansible.builtin.shell: >
@@ -52,7 +60,7 @@
         -m {{ wazuh_agent_authd.registration_address }}
         -p {{ wazuh_agent_authd.port }}
         {% if wazuh_agent_nat %} -I "any" {% endif %}
-        {% if authd_pass | length > 0 %} -P {{ authd_pass }} {% endif %}
+        {% if wazuh_authd_pass | length > 0 %} -P {{ wazuh_authd_pass }} {% endif %}
         {% if wazuh_agent_authd.ssl_auto_negotiate == 'yes' %} -a {% endif %}
         {% if wazuh_agent_authd.groups is defined and wazuh_agent_authd.groups | length > 0 %}
         -G "{{ wazuh_agent_authd.groups | join(',') }}"
@@ -61,24 +69,27 @@
       notify: macOS | Restart Wazuh Agent
       vars:
         agent_name: "{% if single_agent_name is defined %}{{ single_agent_name }}{% else %}{{ ansible_hostname }}{% endif %}"
+      changed_when: false
       when:
         - not client_keys_file.stat.exists or client_keys_file.stat.size == 0
         - wazuh_agent_authd.registration_address is not none
 
     - name: macOS | Verify agent registration
-      ansible.builtin.shell: >
-        sh -c "echo '{{ agent_auth_output.stdout }} {{ agent_auth_output.stderr }}' | grep 'Valid key received'"
+      ansible.builtin.shell: # noqa risky-shell-pipe
+        cmd: sh -c "echo '{{ agent_auth_output.stdout }} {{ agent_auth_output.stderr }}' | grep 'Valid key received'"
+      changed_when: false
       when:
         - not client_keys_file.stat.exists or client_keys_file.stat.size == 0
         - wazuh_agent_authd.registration_address is not none
-  when:
-    - wazuh_agent_authd.enable | bool
-    - wazuh_agent_config.enrollment.enabled != 'yes'
-  tags:
-    - config
-    - authd
 
 - name: macOS | Agent registration via rest-API
+  when:
+    - not ( wazuh_agent_authd.enable | bool )
+    - wazuh_agent_config.enrollment.enabled != 'yes'
+    - not client_keys_file.stat.exists or client_keys_file.stat.size == 0
+  tags:
+    - config
+    - api
   block:
     - name: macOS | Establish target Wazuh Manager for registration task
       ansible.builtin.set_fact:
@@ -92,7 +103,7 @@
         url: '{{ target_manager.api_proto }}://{{ target_manager.address }}:{{ target_manager.api_port }}/security/user/authenticate'
         method: POST
         url_username: '{{ target_manager.api_user }}'
-        url_password: '{{ api_pass }}'
+        url_password: '{{ wazuh_api_pass }}'
         status_code: 200
         return_content: true
         force_basic_auth: true
@@ -167,14 +178,8 @@
       register: manage_agents_output
       vars:
         agent_name: '{{ target_manager.agent_name | default(ansible_hostname) }}'
+      changed_when: true
       notify: macOS | Restart Wazuh Agent
-  when:
-    - not ( wazuh_agent_authd.enable | bool )
-    - wazuh_agent_config.enrollment.enabled != 'yes'
-    - not client_keys_file.stat.exists or client_keys_file.stat.size == 0
-  tags:
-    - config
-    - api
 
 - name: macOS | Agent registration via auto-enrollment
   ansible.builtin.debug:
@@ -212,7 +217,7 @@
 
 - name: Create auto-enrollment password file
   ansible.builtin.template:
-    src: authd_pass.j2
+    src: wazuh_authd_pass.j2
     dest: "{{ wazuh_macos_config.install_dir }}/etc/authd.pass"
     owner: wazuh
     group: wazuh
@@ -220,7 +225,7 @@
   when:
     - wazuh_agent_config.enrollment.enabled == 'yes'
     - wazuh_agent_config.enrollment.authorization_pass_path_macos | length > 0
-    - authd_pass | length > 0
+    - wazuh_authd_pass | length > 0
   tags:
     - config
 

@@ -28,7 +28,7 @@
     - not wazuh_custom_packages_installation_agent_enabled
 
 - name: RedHat/CentOS/Fedora | Install OpenJDK 1.8
-  ansible.builtin.yum:
+  ansible.builtin.dnf:
     name: java-1.8.0-openjdk
     state: present
   become: true
