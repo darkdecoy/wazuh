@@ -53,6 +53,7 @@
   with_items:
     - rhui-REGION-rhel-server-rhscl
     - rhel-server-rhscl-6-rpms
+  changed_when: false
   when:
     - ansible_distribution == 'RedHat' and  ansible_distribution_major_version == '6'
     - wazuh_manager_config.cluster.disable != 'yes'
@@ -68,7 +69,7 @@
     - wazuh_manager_config.cluster.disable != 'yes'
 
 - name: RedHat/CentOS/Fedora | Install OpenJDK 1.8
-  yum:
+  ansible.builtin.dnf:
     name: java-1.8.0-openjdk
     state: present
     lock_timeout: 200
@@ -112,7 +113,7 @@
   tags:
     - init
 
-- name: Install from Custom Packages
+- name: Install Custom Packages
   ansible.builtin.include_tasks: "../tasks/installation_from_custom_packages.yml"
   when:
     - wazuh_custom_packages_installation_manager_enabled

@@ -1,28 +1,36 @@
 ---
-- ansible.builtin.include_vars: repo_vars.yml
+- name: Include Repository Variables
+  ansible.builtin.include_vars: repo_vars.yml
 
-- ansible.builtin.include_vars: repo.yml
+- name: Include Production Repository Variables
+  ansible.builtin.include_vars: repo.yml
   when: packages_repository == 'production'
 
-- ansible.builtin.include_vars: repo_pre-release.yml
+- name: Include Pre-Release Repository Variables
+  ansible.builtin.include_vars: repo_pre-release.yml
   when: packages_repository == 'pre-release'
 
-- ansible.builtin.include_vars: repo_staging.yml
+- name: Include Staging Repository Variables
+  ansible.builtin.include_vars: repo_staging.yml
   when: packages_repository == 'staging'
 
-- ansible.builtin.import_tasks: local_actions.yml
+- name: Run Local Actions
+  ansible.builtin.import_tasks: local_actions.yml
   when:
-    - generate_certs
+    - wazuh_generate_certs
 
-- block:
-    - ansible.builtin.import_tasks: RedHat.yml
+- name: Configure Wazuh Indexer
+  when: wazuh_perform_installation
+  block:
+    - name: RedHat/Centos | Install Wazuh Indexer
+      ansible.builtin.import_tasks: RedHat.yml
       when: ansible_os_family == 'RedHat'
 
-    - ansible.builtin.import_tasks: Debian.yml
+    - name: Debian/Ubuntu | Install Wazuh Indexer
+      ansible.builtin.import_tasks: Debian.yml
       when: ansible_os_family == 'Debian'
 
     - name: Remove performance analyzer plugin from Wazuh indexer
-      become: true
       ansible.builtin.command: ./opensearch-plugin remove opensearch-performance-analyzer
       ignore_errors: true
       args:
@@ -32,50 +40,51 @@
         - remove_opensearch_performance_analyzer.rc != 0
         - '"not found" not in remove_opensearch_performance_analyzer.stderr'
       changed_when: "remove_opensearch_performance_analyzer.rc == 0"
+      become: true
 
     - name: Remove Opensearch configuration file
       ansible.builtin.file:
-        path: "{{ indexer_conf_path }}/opensearch.yml"
+        path: "{{ wazuh_indexer_conf_path }}/opensearch.yml"
         state: absent
       tags: install
 
     - name: Copy Opensearch Configuration File
       ansible.builtin.template:
         src: "templates/opensearch.yml.j2"
-        dest: "{{ indexer_conf_path }}/opensearch.yml"
+        dest: "{{ wazuh_indexer_conf_path }}/opensearch.yml"
         owner: root
         group: wazuh-indexer
         mode: "0640"
         force: true
       tags: install
 
-    - ansible.builtin.include_tasks: security_actions.yml
+    - name: Run Security Actions
+      ansible.builtin.include_tasks: security_actions.yml
       tags:
         - security
-
 
     - name: Configure Wazuh indexer JVM memmory.
       ansible.builtin.template:
         src: "templates/jvm.options.j2"
-        dest: "{{ indexer_conf_path }}/jvm.options"
+        dest: "{{ wazuh_indexer_conf_path }}/jvm.options"
         owner: root
         group: wazuh-indexer
         mode: "0644"
         force: true
-      notify: restart wazuh-indexer
+      notify: Restart wazuh-indexer
       tags: install
 
     - name: Ensure extra time for Wazuh indexer to start on reboots
       ansible.builtin.lineinfile:
         path: /usr/lib/systemd/system/wazuh-indexer.service
         regexp: '^TimeoutStartSec='
-        line: "TimeoutStartSec={{ indexer_start_timeout }}"
+        line: "TimeoutStartSec={{ wazuh_indexer_start_timeout }}"
       become: true
       tags: configure
 
     - name: Index files to remove
       ansible.builtin.find:
-        paths: "{{ indexer_index_path }}"
+        paths: "{{ wazuh_indexer_index_path }}"
         patterns: "*"
       register: files_to_delete
 
@@ -93,9 +102,9 @@
 
     - name: Wait for Wazuh indexer API
       ansible.builtin.uri:
-        url: "https://{{ inventory_hostname if not single_node else indexer_network_host }}:{{ indexer_http_port }}/_cat/health/"
+        url: "https://{{ inventory_hostname if not wazuh_single_node else wazuh_indexer_network_host }}:{{ wazuh_indexer_http_port }}/_cat/health/"
         user: "admin" # Default Indexer user is always "admin"
-        password: "{{ indexer_admin_password }}"
+        password: "{{ wazuh_indexer_admin_password }}"
         validate_certs: false
         status_code: 200,401
         return_content: true
@@ -103,7 +112,7 @@
       register: _result
       until:
         - _result is defined
-        - '"green" in _result.content or ( "yellow" in _result.content and single_node )'
+        - '"green" in _result.content or ( "yellow" in _result.content and wazuh_single_node )'
       retries: 24
       delay: 5
       tags: debug
@@ -112,9 +121,11 @@
 
     - name: Wait for Wazuh indexer API (Private IP)
       ansible.builtin.uri:
-        url: "https://{{ hostvars[inventory_hostname]['private_ip'] if not single_node else indexer_network_host }}:{{ indexer_http_port }}/_cat/health/"
+        url: |
+          https://{{ hostvars[inventory_hostname]['private_ip']
+          if not wazuh_single_node else wazuh_indexer_network_host }}:{{ wazuh_indexer_http_port }}/_cat/health/
         user: "admin" # Default Indexer user is always "admin"
-        password: "{{ indexer_admin_password }}"
+        password: "{{ wazuh_indexer_admin_password }}"
         validate_certs: false
         status_code: 200,401
         return_content: true
@@ -122,19 +133,19 @@
       register: _result
       until:
         - _result is defined
-        - '"green" in _result.content or ( "yellow" in _result.content and single_node )'
+        - '"green" in _result.content or ( "yellow" in _result.content and wazuh_single_node )'
       retries: 24
       delay: 5
       tags: debug
       when:
         - hostvars[inventory_hostname]['private_ip'] is defined and hostvars[inventory_hostname]['private_ip']
 
-    - ansible.builtin.import_tasks: "RMRedHat.yml"
+    - name: Removing Red Hat Repository
+      ansible.builtin.import_tasks: "RMRedHat.yml"
       when: ansible_os_family == "RedHat"
 
     - name: Reload systemd configuration
       ansible.builtin.systemd:
         daemon_reload: true
       become: true
-      notify: restart wazuh-indexer
-  when: perform_installation
+      notify: Restart wazuh-indexer

@@ -82,22 +82,22 @@ The hereunder example playbook uses the `wazuh-ansible` role to provision a prod
     - hosts: wi1
       roles:
         - role: wazuh.wazuh.indexer
-          indexer_network_host: "{{ private_ip }}"
-          indexer_cluster_nodes:
+          wazuh_indexer_network_host: "{{ private_ip }}"
+          wazuh_indexer_cluster_nodes:
             - "{{ hostvars.wi1.private_ip }}"
             - "{{ hostvars.wi2.private_ip }}"
             - "{{ hostvars.wi3.private_ip }}"
-          indexer_discovery_nodes:
+          wazuh_indexer_discovery_nodes:
             - "{{ hostvars.wi1.private_ip }}"
             - "{{ hostvars.wi2.private_ip }}"
             - "{{ hostvars.wi3.private_ip }}"
-          perform_installation: false
+          wazuh_perform_installation: false
       become: no
       vars:
-        indexer_node_master: true
-        instances:
+        wazuh_indexer_node_master: true
+        wazuh_instances:
           node1:
-            name: node-1       # Important: must be equal to indexer_node_name.
+            name: node-1       # Important: must be equal to wazuh_indexer_node_name.
             ip: "{{ hostvars.wi1.private_ip }}"   # When unzipping, the node will search for its node name folder to get the cert.
             role: indexer
           node2:
@@ -130,22 +130,22 @@ The hereunder example playbook uses the `wazuh-ansible` role to provision a prod
       strategy: free
       roles:
         - role: wazuh.wazuh.indexer
-          indexer_network_host: "{{ private_ip }}"
+          wazuh_indexer_network_host: "{{ private_ip }}"
       become: yes
       become_user: root
       vars:
-        indexer_cluster_nodes:
+        wazuh_indexer_cluster_nodes:
           - "{{ hostvars.wi1.private_ip }}"
           - "{{ hostvars.wi2.private_ip }}"
           - "{{ hostvars.wi3.private_ip }}"
-        indexer_discovery_nodes:
+        wazuh_indexer_discovery_nodes:
           - "{{ hostvars.wi1.private_ip }}"
           - "{{ hostvars.wi2.private_ip }}"
           - "{{ hostvars.wi3.private_ip }}"
-        indexer_node_master: true
-        instances:
+        wazuh_indexer_node_master: true
+        wazuh_instances:
           node1:
-            name: node-1       # Important: must be equal to indexer_node_name.
+            name: node-1       # Important: must be equal to wazuh_indexer_node_name.
             ip: "{{ hostvars.wi1.private_ip }}"   # When unzipping, the node will search for its node name folder to get the cert.
             role: indexer
           node2:
@@ -176,7 +176,7 @@ The hereunder example playbook uses the `wazuh-ansible` role to provision a prod
       roles:
         - role: "wazuh.wazuh.manager"
         - role: "wazuh.wazuh.filebeat"
-          filebeat_node_name: node-4
+          wazuh_filebeat_node_name: node-4
       become: yes
       become_user: root
       vars:
@@ -199,7 +199,7 @@ The hereunder example playbook uses the `wazuh-ansible` role to provision a prod
         wazuh_api_users:
           - username: custom-user
             password: SecretPassword1!
-        filebeat_output_indexer_hosts:
+        wazuh_filebeat_output_indexer_hosts:
                 - "{{ hostvars.wi1.private_ip }}"
                 - "{{ hostvars.wi2.private_ip }}"
                 - "{{ hostvars.wi3.private_ip }}"
@@ -208,7 +208,7 @@ The hereunder example playbook uses the `wazuh-ansible` role to provision a prod
       roles:
         - role: "wazuh.wazuh.manager"
         - role: "wazuh.wazuh.filebeat"
-          filebeat_node_name: node-5
+          wazuh_filebeat_node_name: node-5
       become: yes
       become_user: root
       vars:
@@ -228,7 +228,7 @@ The hereunder example playbook uses the `wazuh-ansible` role to provision a prod
               nodes:
                   - "{{ hostvars.manager.private_ip }}"
               hidden: 'no'
-        filebeat_output_indexer_hosts:
+        wazuh_filebeat_output_indexer_hosts:
                 - "{{ hostvars.wi1.private_ip }}"
                 - "{{ hostvars.wi2.private_ip }}"
                 - "{{ hostvars.wi3.private_ip }}"
@@ -241,16 +241,16 @@ The hereunder example playbook uses the `wazuh-ansible` role to provision a prod
       become: yes
       become_user: root
       vars:
-        indexer_network_host: "{{ hostvars.dashboard.private_ip }}"
-        indexer_node_name: node-6
-        indexer_node_master: false
-        indexer_node_ingest: false
-        indexer_node_data: false
-        indexer_cluster_nodes:
+        wazuh_indexer_network_host: "{{ hostvars.dashboard.private_ip }}"
+        wazuh_indexer_node_name: node-6
+        wazuh_indexer_node_master: false
+        wazuh_indexer_node_ingest: false
+        wazuh_indexer_node_data: false
+        wazuh_indexer_cluster_nodes:
             - "{{ hostvars.wi1.private_ip }}"
             - "{{ hostvars.wi2.private_ip }}"
             - "{{ hostvars.wi3.private_ip }}"
-        indexer_discovery_nodes:
+        wazuh_indexer_discovery_nodes:
             - "{{ hostvars.wi1.private_ip }}"
             - "{{ hostvars.wi2.private_ip }}"
             - "{{ hostvars.wi3.private_ip }}"
@@ -261,7 +261,7 @@ The hereunder example playbook uses the `wazuh-ansible` role to provision a prod
             port: 55000
             username: custom-user
             password: SecretPassword1!
-        instances:
+        wazuh_instances:
           node1:
             name: node-1
             ip: "{{ hostvars.wi1.private_ip }}"   # When unzipping, the node will search for its node name folder to get the cert.
@@ -299,9 +299,9 @@ The hereunder example playbook uses the `wazuh-ansible` role to provision a prod
 - The ssh credentials used by Ansible during the provision can be specified in this file too. Another option is including them directly on the playbook.
 
 ```ini
-wi1 ansible_host=<wi1_ec2_public_ip> private_ip=<wi1_ec2_private_ip> indexer_node_name=node-1
-wi2 ansible_host=<wi2_ec2_public_ip> private_ip=<wi2_ec2_private_ip> indexer_node_name=node-2
-wi3 ansible_host=<wi3_ec2_public_ip> private_ip=<wi3_ec2_private_ip> indexer_node_name=node-3
+wi1 ansible_host=<wi1_ec2_public_ip> private_ip=<wi1_ec2_private_ip> wazuh_indexer_node_name=node-1
+wi2 ansible_host=<wi2_ec2_public_ip> private_ip=<wi2_ec2_private_ip> wazuh_indexer_node_name=node-2
+wi3 ansible_host=<wi3_ec2_public_ip> private_ip=<wi3_ec2_private_ip> wazuh_indexer_node_name=node-3
 dashboard  ansible_host=<dashboard_node_public_ip> private_ip=<dashboard_ec2_private_ip>
 manager ansible_host=<manager_node_public_ip> private_ip=<manager_ec2_private_ip>
 worker  ansible_host=<worker_node_public_ip> private_ip=<worker_ec2_private_ip>
@@ -336,14 +336,14 @@ The hereunder example playbook uses the `wazuh-ansible` role to provision a sing
   - hosts: aio
     roles:
       - role: wazuh.wazuh.indexer
-        perform_installation: false
+        wazuh_perform_installation: false
     become: no
     #become_user: root
     vars:
-      indexer_node_master: true
-      instances:
+      wazuh_indexer_node_master: true
+      wazuh_instances:
         node1:
-          name: node-1       # Important: must be equal to indexer_node_name.
+          name: node-1       # Important: must be equal to wazuh_indexer_node_name.
           ip: 127.0.0.1
           role: indexer
     tags:
@@ -358,16 +358,16 @@ The hereunder example playbook uses the `wazuh-ansible` role to provision a sing
       - role: wazuh.wazuh.filebeat
       - role: wazuh.wazuh.dashboard
     vars:
-      single_node: true
-      minimum_master_nodes: 1
-      indexer_node_master: true
-      indexer_network_host: 127.0.0.1
-      filebeat_node_name: node-1
-      filebeat_output_indexer_hosts:
+      wazuh_single_node: true
+      wazuh_minimum_master_nodes: 1
+      wazuh_indexer_node_master: true
+      wazuh_indexer_network_host: 127.0.0.1
+      wazuh_filebeat_node_name: node-1
+      wazuh_filebeat_output_indexer_hosts:
       - 127.0.0.1
-      instances:
+      wazuh_instances:
         node1:
-          name: node-1       # Important: must be equal to indexer_node_name.
+          name: node-1       # Important: must be equal to wazuh_indexer_node_name.
           ip: 127.0.0.1
           role: indexer
       ansible_shell_allow_world_readable_temp: true

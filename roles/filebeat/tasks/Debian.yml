@@ -14,6 +14,9 @@
   ansible.builtin.get_url:
     url: "{{ wazuh_repo.gpg }}"
     dest: "{{ wazuh_repo.path }}"
+    owner: root
+    group: root
+    mode: "0660"
 
 - name: Import Filebeat GPG key
   ansible.builtin.command: "gpg --no-default-keyring --keyring gnupg-ring:{{ wazuh_repo.keyring_path }} --import {{ wazuh_repo.path }}"

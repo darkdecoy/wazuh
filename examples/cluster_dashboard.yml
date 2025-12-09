@@ -1,9 +1,9 @@
 #### Dashboard
-indexer_network_host: "{{ hostvars.dashboard.private_ip }}"
-indexer_node_name: node-6
-indexer_node_master: false
-indexer_node_ingest: false
-indexer_node_data: false
+wazuh_indexer_network_host: "{{ hostvars.dashboard.private_ip }}"
+wazuh_indexer_node_name: node-6
+wazuh_indexer_node_master: false
+wazuh_indexer_node_ingest: false
+wazuh_indexer_node_data: false
 dashboard_node_name: node-6
 wazuh_api_credentials:
   - id: default

@@ -21,19 +21,19 @@
 #
 # #### Indexer
 # 
-# single_node: true
+# wazuh_single_node: true
 # 
-# minimum_master_nodes: 1
+# wazuh_minimum_master_nodes: 1
 # 
-# indexer_network_host: 127.0.0.1
+# wazuh_indexer_network_host: 127.0.0.1
 #
-# indexer_node_master: true
+# wazuh_indexer_node_master: true
 # 
-# instances:
+# wazuh_instances:
 # 
 #   node1:
 # 
-#     name: node-1 # Important: must be equal to indexer_node_name.
+#     name: node-1 # Important: must be equal to wazuh_indexer_node_name.
 # 
 #     ip: 127.0.0.1
 # 
@@ -41,9 +41,9 @@
 #
 # #### Filebeat
 # 
-# filebeat_node_name: node-1
+# wazuh_filebeat_node_name: node-1
 # 
-# filebeat_output_indexer_hosts:
+# wazuh_filebeat_output_indexer_hosts:
 # 
 #   - 127.0.0.1
 # 

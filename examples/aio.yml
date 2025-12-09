@@ -1,30 +1,30 @@
 #### Indexer
-single_node: true
-minimum_master_nodes: 1
-indexer_network_host: 127.0.0.1
+wazuh_single_node: true
+wazuh_minimum_master_nodes: 1
+wazuh_indexer_network_host: 127.0.0.1
 
-indexer_admin_password: <changeme>
-dashboard_password: <changeme>
+wazuh_indexer_admin_password: <changeme>
+wazuh_dashboard_password: <changeme>
 
-indexer_security_user: admin
-indexer_security_password: changeme
+wazuh_indexer_security_user: admin
+wazuh_indexer_security_password: changeme
 
-indexer_node_master: true
-instances:
+wazuh_indexer_node_master: true
+wazuh_instances:
   node1:
-    name: node-1 # Important: must be equal to indexer_node_name.
+    name: node-1 # Important: must be equal to wazuh_indexer_node_name.
     ip: 127.0.0.1
     role: indexer
 
 #### Filebeat
-filebeat_node_name: node-1
-filebeat_output_indexer_hosts:
+wazuh_filebeat_node_name: node-1
+wazuh_filebeat_output_indexer_hosts:
   - 127.0.0.1
 ansible_shell_allow_world_readable_temp: true
 
 #### Manager
 ## groups to create
-agent_groups:
+wazuh_agent_groups:
   - "windows"
   - "linux"
   - "ubuntu"

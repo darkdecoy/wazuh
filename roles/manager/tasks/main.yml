@@ -34,15 +34,19 @@
       retries: 10
       delay: 10
 
-- ansible.builtin.include_vars: repo_vars.yml
+- name: Include Repository Variables
+  ansible.builtin.include_vars: repo_vars.yml
 
-- ansible.builtin.include_vars: repo.yml
+- name: Include Production Repository Variables
+  ansible.builtin.include_vars: repo.yml
   when: packages_repository == 'production'
 
-- ansible.builtin.include_vars: repo_pre-release.yml
+- name: Include Pre-Release Repository Variables
+  ansible.builtin.include_vars: repo_pre-release.yml
   when: packages_repository == 'pre-release'
 
-- ansible.builtin.include_vars: repo_staging.yml
+- name: Include Staging Repository Variables
+  ansible.builtin.include_vars: repo_staging.yml
   when: packages_repository == 'staging'
 
 - name: Overlay wazuh_manager_config on top of defaults
@@ -52,24 +56,28 @@
     config_layer: '{{ wazuh_manager_config | default({}) }}'
   when: wazuh_manager_config_overlay | bool
 
-- ansible.builtin.include_tasks: "RedHat.yml"
+- name: RedHat/Centos | Install Wazuh Manager
+  ansible.builtin.include_tasks: "RedHat.yml"
   when: (ansible_os_family == "RedHat" and ansible_distribution_major_version|int > 5) or (ansible_os_family  == "RedHat" and ansible_distribution == "Amazon")
 
-- ansible.builtin.include_tasks: "Debian.yml"
+- name: Debian/Ubuntu | Install Wazuh Manager
+  ansible.builtin.include_tasks: "Debian.yml"
   when: ansible_os_family == "Debian"
 
 - name: Generate the wazuh-keystore (username)
   ansible.builtin.shell: >
-    /var/ossec/bin/wazuh-keystore -f indexer -k username -v {{ indexer_security_user }}
-  notify: restart wazuh-manager
+    /var/ossec/bin/wazuh-keystore -f indexer -k username -v {{ wazuh_indexer_security_user }}
+  changed_when: true
+  notify: Restart wazuh-manager
   tags:
     - init
     - config
 
 - name: Generate the wazuh-keystore (password)
   ansible.builtin.shell: >
-    /var/ossec/bin/wazuh-keystore -f indexer -k password -v {{ indexer_security_password }}
-  notify: restart wazuh-manager
+    /var/ossec/bin/wazuh-keystore -f indexer -k password -v {{ wazuh_indexer_security_password }}
+  changed_when: true
+  notify: Restart wazuh-manager
   tags:
     - init
     - config
@@ -84,7 +92,8 @@
   tags: init
 
 - name: Generate SSL files for authd
-  ansible.builtin.command: "openssl req -x509 -sha256 -nodes -days 365 -newkey rsa:1825 -keyout sslmanager.key -out sslmanager.cert -subj /CN={{ wazuh_manager_fqdn }}/"
+  ansible.builtin.command: ^
+    openssl req -x509 -sha256 -nodes -days 365 -newkey rsa:1825 -keyout sslmanager.key -out sslmanager.cert -subj /CN={{ wazuh_manager_fqdn }}/
   args:
     creates: sslmanager.cert
     chdir: "{{ wazuh_dir }}/etc/"
@@ -162,7 +171,7 @@
     owner: wazuh
     group: wazuh
     mode: "0660"
-  notify: restart wazuh-manager
+  notify: Restart wazuh-manager
   tags:
     - init
     - config
@@ -175,7 +184,7 @@
     owner: wazuh
     group: wazuh
     mode: "0660"
-  notify: restart wazuh-manager
+  notify: Restart wazuh-manager
   tags:
     - init
     - config
@@ -188,7 +197,7 @@
     owner: wazuh
     group: wazuh
     mode: "0660"
-  notify: restart wazuh-manager
+  notify: Restart wazuh-manager
   tags:
     - init
     - config
@@ -201,7 +210,7 @@
     owner: wazuh
     group: wazuh
     mode: "0660"
-  notify: restart wazuh-manager
+  notify: Restart wazuh-manager
   tags:
     - init
     - config
@@ -215,7 +224,7 @@
     group: wazuh
     mode: "0660"
     validate: "{{ wazuh_dir }}/bin/verify-agent-conf -f %s"
-  notify: restart wazuh-manager
+  notify: Restart wazuh-manager
   tags:
     - init
     - config
@@ -229,7 +238,7 @@
     owner: root
     group: wazuh
     mode: "0640"
-  notify: restart wazuh-manager
+  notify: Restart wazuh-manager
   tags:
     - init
     - config
@@ -268,7 +277,8 @@
 
 - name: Enable client-syslog
   ansible.builtin.command: "{{ wazuh_dir }}/bin/wazuh-control enable client-syslog"
-  notify: restart wazuh-manager
+  changed_when: true
+  notify: Restart wazuh-manager
   when:
     - csyslog_enabled.stdout == '0' or "skipped" in csyslog_enabled.stdout
     - syslog_output is defined and syslog_output
@@ -290,7 +300,8 @@
 
 - name: Enable ossec-agentlessd
   ansible.builtin.command: "{{ wazuh_dir }}/bin/wazuh-control enable agentless"
-  notify: restart wazuh-manager
+  changed_when: true
+  notify: Restart wazuh-manager
   when:
     - agentlessd_enabled.stdout == '0' or "skipped" in agentlessd_enabled.stdout
     - agentless_creds is defined
@@ -314,7 +325,7 @@
     owner: root
     group: wazuh
     mode: "0644"
-  notify: restart wazuh-manager
+  notify: Restart wazuh-manager
   tags:
     - init
     - config
@@ -327,7 +338,7 @@
     group: wazuh
     mode: "0640"
   no_log: true
-  notify: restart wazuh-manager
+  notify: Restart wazuh-manager
   when:
     - wazuh_manager_config.authd.use_password is defined
     - wazuh_manager_config.authd.use_password == 'yes'
@@ -335,6 +346,11 @@
     - config
 
 - name: Create custom API user
+  tags:
+    - config_api_users
+  when:
+    - wazuh_api_users is defined
+    - wazuh_manager_config.cluster.node_type == "master"
   block:
     - name: Copy create_user script
       ansible.builtin.copy:
@@ -366,12 +382,6 @@
         path: "{{ wazuh_dir }}/framework/scripts/create_user.py"
         state: absent
 
-  tags:
-    - config_api_users
-  when:
-    - wazuh_api_users is defined
-    - wazuh_manager_config.cluster.node_type == "master"
-
 - name: Agentless Hosts & Passwd
   ansible.builtin.template:
     src: agentless.j2
@@ -385,7 +395,9 @@
     - config
 
 - name: Encode the secret
-  ansible.builtin.shell: "/usr/bin/base64 {{ wazuh_dir }}/agentless/.passlist_tmp > {{ wazuh_dir }}/agentless/.passlist && rm {{ wazuh_dir }}/agentless/.passlist_tmp"
+  ansible.builtin.shell: ^
+    "/usr/bin/base64 {{ wazuh_dir }}/agentless/.passlist_tmp > {{ wazuh_dir }}/agentless/.passlist && rm {{ wazuh_dir }}/agentless/.passlist_tmp"
+  changed_when: false
   when: agentless_creds is defined
   tags:
     - config
@@ -401,9 +413,10 @@
 - name: Create agent groups
   ansible.builtin.command: "{{ wazuh_dir }}/bin/agent_groups -a -g {{ item }} -q"
   with_items:
-    - "{{ agent_groups }}"
+    - "{{ wazuh_agent_groups }}"
+  changed_when: false
   when:
-    - ( agent_groups is defined) and ( agent_groups|length > 0)
+    - ( wazuh_agent_groups is defined) and ( wazuh_agent_groups|length > 0)
   tags: molecule-idempotence-notest
 
 - name: Run uninstall tasks

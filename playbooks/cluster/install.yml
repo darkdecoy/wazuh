@@ -3,7 +3,7 @@
 - hosts: '{{target|default("wazuh_indexer")}}'
   roles:
     - role: indexer
-      perform_installation: false
+      wazuh_perform_installation: false
   tags:
     - setup-all
     - generate-certs

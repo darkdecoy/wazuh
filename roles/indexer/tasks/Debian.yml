@@ -21,7 +21,9 @@
       ansible.builtin.get_url:
         url: "{{ wazuh_repo.gpg }}"
         dest: "{{ wazuh_repo.path }}"
-        state: present
+        owner: root
+        group: root
+        mode: "0660"
 
     - name: Import Wazuh repository GPG key
       ansible.builtin.command: "gpg --no-default-keyring --keyring gnupg-ring:{{ wazuh_repo.keyring_path }} --import {{ wazuh_repo.path }}"
@@ -42,7 +44,7 @@
 
 - name: Install Wazuh indexer
   ansible.builtin.apt:
-    name: wazuh-indexer={{ indexer_version }}-1
+    name: wazuh-indexer={{ wazuh_indexer_version }}-1
     state: present
   register: install
   tags: install

@@ -117,13 +117,13 @@ function cert_generateCertificateconfiguration() {
 }
 function cert_generateIndexercertificates() {
 
-    if [ ${#indexer_node_names[@]} -gt 0 ]; then
+    if [ ${#wazuh_indexer_node_names[@]} -gt 0 ]; then
         common_logger -d "Creating the Wazuh indexer certificates."
 
-        for i in "${!indexer_node_names[@]}"; do
-            cert_generateCertificateconfiguration "${indexer_node_names[i]}" "${indexer_node_ips[i]}"
-            eval "openssl req -new -nodes -newkey rsa:2048 -keyout ${cert_tmp_path}/${indexer_node_names[i]}-key.pem -out ${cert_tmp_path}/${indexer_node_names[i]}.csr -config ${cert_tmp_path}/${indexer_node_names[i]}.conf -days 3650 ${debug}"
-            eval "openssl x509 -req -in ${cert_tmp_path}/${indexer_node_names[i]}.csr -CA ${cert_tmp_path}/root-ca.pem -CAkey ${cert_tmp_path}/root-ca.key -CAcreateserial -out ${cert_tmp_path}/${indexer_node_names[i]}.pem -extfile ${cert_tmp_path}/${indexer_node_names[i]}.conf -extensions v3_req -days 3650 ${debug}"
+        for i in "${!wazuh_indexer_node_names[@]}"; do
+            cert_generateCertificateconfiguration "${wazuh_indexer_node_names[i]}" "${indexer_node_ips[i]}"
+            eval "openssl req -new -nodes -newkey rsa:2048 -keyout ${cert_tmp_path}/${wazuh_indexer_node_names[i]}-key.pem -out ${cert_tmp_path}/${wazuh_indexer_node_names[i]}.csr -config ${cert_tmp_path}/${wazuh_indexer_node_names[i]}.conf -days 3650 ${debug}"
+            eval "openssl x509 -req -in ${cert_tmp_path}/${wazuh_indexer_node_names[i]}.csr -CA ${cert_tmp_path}/root-ca.pem -CAkey ${cert_tmp_path}/root-ca.key -CAcreateserial -out ${cert_tmp_path}/${wazuh_indexer_node_names[i]}.pem -extfile ${cert_tmp_path}/${wazuh_indexer_node_names[i]}.conf -extensions v3_req -days 3650 ${debug}"
         done
     else
         return 1
@@ -199,7 +199,7 @@ function cert_readConfig() {
         eval "$(cert_convertCRLFtoLF "${config_file}")"
         common_checkWazuhConfigYaml
         eval "$(cert_parseYaml "${config_file}")"
-        eval "indexer_node_names=( $(cert_parseYaml "${config_file}" | grep nodes_indexer__name | sed 's/nodes_indexer__name=//' | sed -r 's/\s+//g') )"
+        eval "wazuh_indexer_node_names=( $(cert_parseYaml "${config_file}" | grep nodes_indexer__name | sed 's/nodes_indexer__name=//' | sed -r 's/\s+//g') )"
         eval "server_node_names=( $(cert_parseYaml "${config_file}" | grep nodes_server__name | sed 's/nodes_server__name=//' | sed -r 's/\s+//g') )"
         eval "dashboard_node_names=( $(cert_parseYaml "${config_file}" | grep nodes_dashboard__name | sed 's/nodes_dashboard__name=//' | sed -r 's/\s+//g') )"
 
@@ -209,8 +209,8 @@ function cert_readConfig() {
 
         eval "server_node_types=( $(cert_parseYaml "${config_file}" | grep nodes_server__node_type | sed 's/nodes_server__node_type=//' | sed -r 's/\s+//g') )"
 
-        unique_names=($(echo "${indexer_node_names[@]}" | tr ' ' '\n' | sort -u | tr '\n' ' '))
-        if [ "${#unique_names[@]}" -ne "${#indexer_node_names[@]}" ]; then 
+        unique_names=($(echo "${wazuh_indexer_node_names[@]}" | tr ' ' '\n' | sort -u | tr '\n' ' '))
+        if [ "${#unique_names[@]}" -ne "${#wazuh_indexer_node_names[@]}" ]; then 
             common_logger -e "Duplicated indexer node names."
             exit 1
         fi

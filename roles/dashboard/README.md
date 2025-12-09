@@ -7,18 +7,18 @@ Installing, deploying and configuring Wazuh Agent.
 - [Default Variables](#default-variables)
   - [dashboard_conf_path](#dashboard_conf_path)
   - [dashboard_node_name](#dashboard_node_name)
-  - [dashboard_password](#dashboard_password)
+  - [wazuh_dashboard_password](#wazuh_dashboard_password)
   - [dashboard_security](#dashboard_security)
   - [dashboard_server_host](#dashboard_server_host)
   - [dashboard_server_name](#dashboard_server_name)
   - [dashboard_server_port](#dashboard_server_port)
   - [dashboard_user](#dashboard_user)
   - [dashboard_version](#dashboard_version)
-  - [indexer_admin_password](#indexer_admin_password)
+  - [wazuh_indexer_admin_password](#wazuh_indexer_admin_password)
   - [indexer_api_protocol](#indexer_api_protocol)
-  - [indexer_cluster_nodes](#indexer_cluster_nodes)
-  - [indexer_http_port](#indexer_http_port)
-  - [local_certs_path](#local_certs_path)
+  - [wazuh_indexer_cluster_nodes](#wazuh_indexer_cluster_nodes)
+  - [wazuh_indexer_http_port](#wazuh_indexer_http_port)
+  - [wazuh_local_certs_path](#wazuh_local_certs_path)
   - [wazuh_api_credentials](#wazuh_api_credentials)
   - [wazuh_version](#wazuh_version)
 - [Discovered Tags](#discovered-tags)
@@ -65,12 +65,12 @@ dashboard_conf_path: /etc/wazuh-dashboard/
 dashboard_node_name: node-1
 ```
 
-### dashboard_password
+### wazuh_dashboard_password
 
 #### Default Value
 
 ```YAML
-dashboard_password: changeme
+wazuh_dashboard_password: changeme
 ```
 
 ### dashboard_security
@@ -121,12 +121,12 @@ dashboard_user: kibanaserver
 dashboard_version: 4.3.9
 ```
 
-### indexer_admin_password
+### wazuh_indexer_admin_password
 
 #### Default Value
 
 ```YAML
-indexer_admin_password: changeme
+wazuh_indexer_admin_password: changeme
 ```
 
 ### indexer_api_protocol
@@ -137,29 +137,29 @@ indexer_admin_password: changeme
 indexer_api_protocol: https
 ```
 
-### indexer_cluster_nodes
+### wazuh_indexer_cluster_nodes
 
 #### Default Value
 
 ```YAML
-indexer_cluster_nodes:
+wazuh_indexer_cluster_nodes:
   - 127.0.0.1
 ```
 
-### indexer_http_port
+### wazuh_indexer_http_port
 
 #### Default Value
 
 ```YAML
-indexer_http_port: 9200
+wazuh_indexer_http_port: 9200
 ```
 
-### local_certs_path
+### wazuh_local_certs_path
 
 #### Default Value
 
 ```YAML
-local_certs_path: '{{ playbook_dir }}/files/indexer/certificates'
+wazuh_local_certs_path: '{{ playbook_dir }}/files/indexer/certificates'
 ```
 
 ### wazuh_api_credentials

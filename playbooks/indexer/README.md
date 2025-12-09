@@ -34,7 +34,7 @@
 
 ```yaml
 
-instances: # A certificate will be generated for every node using the name as CN.
+wazuh_instances: # A certificate will be generated for every node using the name as CN.
 
   node1:
 

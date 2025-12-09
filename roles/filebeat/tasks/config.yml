@@ -1,5 +1,8 @@
 ---
-- block:
+- name: Configure Filebeat
+  tags:
+    - configure
+  block:
     - name: Copy Filebeat configuration.
       ansible.builtin.template:
         src: filebeat.yml.j2
@@ -7,7 +10,7 @@
         owner: root
         group: root
         mode: "0400"
-      notify: restart filebeat
+      notify: Restart filebeat
 
     - name: Fetch latest Wazuh alerts template
       ansible.builtin.get_url:
@@ -16,7 +19,4 @@
         owner: root
         group: root
         mode: "0400"
-      notify: restart filebeat
-
-  tags:
-    - configure
+      notify: Restart filebeat

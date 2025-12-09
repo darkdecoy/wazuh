@@ -1,5 +1,5 @@
 #### Worker
-filebeat_node_name: node-5
+wazuh_filebeat_node_name: node-5
 
 wazuh_manager_config:
   connection:

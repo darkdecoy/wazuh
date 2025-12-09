@@ -19,7 +19,7 @@
 #
 # ```yaml
 #
-# filebeat_output_indexer_hosts:
+# wazuh_filebeat_output_indexer_hosts:
 #
 #   - "<indexer-node-1>:9200"
 #

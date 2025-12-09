@@ -1,46 +1,52 @@
 ---
-- ansible.builtin.include_vars: repo_vars.yml
+- name: Include Repository Variables
+  ansible.builtin.include_vars: repo_vars.yml
 
-- ansible.builtin.include_vars: repo.yml
+- name: Include Production Repository Variables
+  ansible.builtin.include_vars: repo.yml
   when: packages_repository == 'production'
 
-- ansible.builtin.include_vars: repo_pre-release.yml
+- name: Include Pre-Release Repository Variables
+  ansible.builtin.include_vars: repo_pre-release.yml
   when: packages_repository == 'pre-release'
 
-- ansible.builtin.include_vars: repo_staging.yml
+- name: Include Staging Repository Variables
+  ansible.builtin.include_vars: repo_staging.yml
   when: packages_repository == 'staging'
 
-- ansible.builtin.import_tasks: RedHat.yml
+- name: Red Hat/Centos | Install Wazuh Dashboard
+  ansible.builtin.import_tasks: RedHat.yml
   when: ansible_os_family == 'RedHat'
 
-- ansible.builtin.import_tasks: Debian.yml
+- name: Debian/Ubuntu | Install Wazuh Dashboard
+  ansible.builtin.import_tasks: Debian.yml
   when: ansible_os_family == 'Debian'
 
 - name: Remove Dashboard configuration file
   ansible.builtin.file:
-    # noqa 503
-    path: "{{ dashboard_conf_path }}/opensearch_dashboards.yml"
+    # noqa no-handler
+    path: "{{ wazuh_dashboard_conf_path }}/opensearch_dashboards.yml"
     state: absent
   tags: install
 
-- ansible.builtin.import_tasks: security_actions.yml
+- name: Run Security Actions
+  ansible.builtin.import_tasks: security_actions.yml
 
 - name: Copy Configuration File
   ansible.builtin.template:
     src: "templates/opensearch_dashboards.yml.j2"
-    dest: "{{ dashboard_conf_path }}/opensearch_dashboards.yml"
+    dest: "{{ wazuh_dashboard_conf_path }}/opensearch_dashboards.yml"
     group: wazuh-dashboard
     owner: wazuh-dashboard
     mode: "0640"
     force: true
-  notify: restart wazuh-dashboard
+  notify: Restart wazuh-dashboard
   tags:
     - install
     - configure
 
 - name: Ensuring Wazuh dashboard directory owner
   ansible.builtin.file:
-    # noqa 208
     path: "/usr/share/wazuh-dashboard"
     state: directory
     owner: wazuh-dashboard
@@ -49,19 +55,19 @@
 
 - name: Wait for Wazuh-Indexer port
   ansible.builtin.wait_for:
-    host: "{{ indexer_network_host }}"
-    port: "{{ indexer_http_port }}"
+    host: "{{ wazuh_indexer_network_host }}"
+    port: "{{ wazuh_indexer_http_port }}"
 
 - name: Select correct API protocol
   ansible.builtin.set_fact:
-    indexer_api_protocol: "{% if dashboard_security is defined and dashboard_security %}https{% else %}http{% endif %}"
+    wazuh_indexer_api_protocol: "{% if wazuh_dashboard_security is defined and wazuh_dashboard_security %}https{% else %}http{% endif %}"
 
 - name: Attempting to delete legacy Wazuh index if exists
   ansible.builtin.uri:
-    url: "{{ indexer_api_protocol }}://{{ indexer_network_host }}:{{ indexer_http_port }}/.wazuh"
+    url: "{{ wazuh_indexer_api_protocol }}://{{ wazuh_indexer_network_host }}:{{ wazuh_indexer_http_port }}/.wazuh"
     method: DELETE
     user: "admin"
-    password: "{{ indexer_admin_password }}"
+    password: "{{ wazuh_indexer_admin_password }}"
     validate_certs: false
     status_code: 200, 404
 
@@ -85,10 +91,12 @@
   changed_when: false
 
 - name: Configure opensearch.password in opensearch_dashboards.keystore
-  ansible.builtin.shell: >-
-    echo '{{ dashboard_password }}' | /usr/share/wazuh-dashboard/bin/opensearch-dashboards-keystore --allow-root add -f --stdin opensearch.password
+  ansible.builtin.shell: |
+    set -o pipefail
+    echo '{{ wazuh_dashboard_password }}' | /usr/share/wazuh-dashboard/bin/opensearch-dashboards-keystore --allow-root add -f --stdin opensearch.password
   args:
     executable: /bin/bash
+  changed_when: false
   become: true
 
 - name: Ensure Wazuh dashboard started and enabled
@@ -97,5 +105,6 @@
     enabled: true
     state: started
 
-- ansible.builtin.import_tasks: RMRedHat.yml
+- name: Remove Red Hat repository
+  ansible.builtin.import_tasks: RMRedHat.yml
   when: ansible_os_family == 'RedHat'

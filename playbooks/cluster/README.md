@@ -52,15 +52,15 @@
 
 #### Dashboard
 
-indexer_network_host: "{{ hostvars.dashboard.private_ip }}"
+wazuh_indexer_network_host: "{{ hostvars.dashboard.private_ip }}"
 
-indexer_node_name: node-6
+wazuh_indexer_node_name: node-6
 
-indexer_node_master: false
+wazuh_indexer_node_master: false
 
-indexer_node_ingest: false
+wazuh_indexer_node_ingest: false
 
-indexer_node_data: false
+wazuh_indexer_node_data: false
 
 dashboard_node_name: node-6
 
@@ -86,15 +86,15 @@ ansible_shell_allow_world_readable_temp: true
 
 #### Certificate Generation
 
-indexer_node_master: true
+wazuh_indexer_node_master: true
 
-indexer_network_host: "{{ private_ip }}"
+wazuh_indexer_network_host: "{{ private_ip }}"
 
-instances:
+wazuh_instances:
 
   node1:
   
-    name: node-1 # Important: must be equal to indexer_node_name.
+    name: node-1 # Important: must be equal to wazuh_indexer_node_name.
   
     ip: "{{ hostvars.wi1.private_ip }}" # When unzipping, the node will search for its node name folder to get the cert.
   
@@ -146,7 +146,7 @@ instances:
 
 #### Indexer
 
-indexer_cluster_nodes:
+wazuh_indexer_cluster_nodes:
 
   - "{{ hostvars.wi1.private_ip }}"
 
@@ -154,7 +154,7 @@ indexer_cluster_nodes:
 
   - "{{ hostvars.wi3.private_ip }}"
 
-indexer_discovery_nodes:
+wazuh_indexer_discovery_nodes:
 
   - "{{ hostvars.wi1.private_ip }}"
 
@@ -170,7 +170,7 @@ indexer_discovery_nodes:
 
 #### Manager
 
-filebeat_node_name: node-4
+wazuh_filebeat_node_name: node-4
 
 wazuh_manager_config:
 
@@ -210,7 +210,7 @@ wazuh_api_users:
 
     password: SecretPassword1!
 
-filebeat_output_indexer_hosts:
+wazuh_filebeat_output_indexer_hosts:
 
   - "{{ hostvars.wi1.private_ip }}"
 
@@ -226,7 +226,7 @@ filebeat_output_indexer_hosts:
 
 #### Worker
 
-filebeat_node_name: node-5
+wazuh_filebeat_node_name: node-5
 
 wazuh_manager_config:
 

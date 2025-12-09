@@ -1,10 +1,10 @@
 #### Certificate Generation
 
-indexer_node_master: true
-indexer_network_host: "{{ private_ip }}"
-instances:
+wazuh_indexer_node_master: true
+wazuh_indexer_network_host: "{{ private_ip }}"
+wazuh_instances:
   node1:
-    name: node-1 # Important: must be equal to indexer_node_name.
+    name: node-1 # Important: must be equal to wazuh_indexer_node_name.
     ip: "{{ hostvars.wi1.private_ip }}" # When unzipping, the node will search for its node name folder to get the cert.
     role: indexer
   node2:
@@ -31,11 +31,11 @@ instances:
     role: dashboard
 
 #### Indexer
-indexer_cluster_nodes:
+wazuh_indexer_cluster_nodes:
   - "{{ hostvars.wi1.private_ip }}"
   - "{{ hostvars.wi2.private_ip }}"
   - "{{ hostvars.wi3.private_ip }}"
-indexer_discovery_nodes:
+wazuh_indexer_discovery_nodes:
   - "{{ hostvars.wi1.private_ip }}"
   - "{{ hostvars.wi2.private_ip }}"
   - "{{ hostvars.wi3.private_ip }}"
