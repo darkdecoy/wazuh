@@ -1,0 +1,1 @@
+echo "wazuh-agent hold" | dpkg --set-selections
