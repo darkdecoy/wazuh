@@ -7,11 +7,11 @@
       delegate_to: localhost
       run_once: true
     - role: ../../roles/wazuh/wazuh-indexer
-      wazuh_perform_installation: false
+      perform_installation: false
   vars:
-    wazuh_instances:
+    instances:
       node1:
-        name: node-1       # Important: must be equal to wazuh_indexer_node_name.
+        name: node-1       # Important: must be equal to indexer_node_name.
         ip: 127.0.0.1
         role: indexer
   tags:
@@ -24,7 +24,7 @@
       vars:
     - role: ../../roles/wazuh/ansible-filebeat-oss
       vars:
-        wazuh_filebeat_output_indexer_hosts:
+        filebeat_output_indexer_hosts:
         - "indexer_centos7:9200"
   pre_tasks:
     - name: (converge) fix missing packages in cloud images

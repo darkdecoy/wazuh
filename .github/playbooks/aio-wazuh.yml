@@ -11,11 +11,11 @@
     # 2. Generate certificates
     - role: ../../roles/wazuh/wazuh-indexer
       vars:
-        wazuh_generate_certs: true
-        wazuh_perform_installation: false
-        wazuh_instances:
+        generate_certs: true
+        perform_installation: false
+        instances:
           node1:
-            name: wazuh-es01       # Important: must be equal to wazuh_indexer_node_name.
+            name: wazuh-es01       # Important: must be equal to indexer_node_name.
             ip: "127.0.0.1"   # When unzipping, the node will search for its node name folder to get the cert.
             role: indexer
           node3:
@@ -39,23 +39,23 @@
     # 1. Wazuh indexer
     - role: ../../roles/wazuh/wazuh-indexer
       vars:
-        wazuh_indexer_node_name: "wazuh-es01"
-        wazuh_single_node: true
+        indexer_node_name: "wazuh-es01"
+        single_node: true
     # 2. Managers
     - role: ../../roles/wazuh/ansible-wazuh-manager
     - role: ../../roles/wazuh/ansible-filebeat-oss
       vars:
-        wazuh_filebeat_node_name: "wazuh-mgr01"
-        wazuh_filebeat_output_indexer_hosts:
+        filebeat_node_name: "wazuh-mgr01"
+        filebeat_output_indexer_hosts:
         - "localhost:9200"
     # 3. Wazuh dashboard
     - role: ../../roles/wazuh/wazuh-dashboard
       vars:
         dashboard_node_name: "wazuh-dash01"
   vars:
-    wazuh_instances:
+    instances:
       node1:
-        name: wazuh-es01       # Important: must be equal to wazuh_indexer_node_name.
+        name: wazuh-es01       # Important: must be equal to indexer_node_name.
         ip: "127.0.0.1"  # When unzipping, the node will search for its node name folder to get the cert.
         role: indexer
       node3:

@@ -1,14 +1,14 @@
 ---
 wazuh_filebeat_version: 7.10.2
 
-wazuh_template_branch: v4.14.1
+wazuh_template_branch: v4.14.2
 
 wazuh_filebeat_node_name: node-1
 
 wazuh_filebeat_output_indexer_hosts:
   - "localhost"
 
-wazuh_filebeat_module_package_name: wazuh-filebeat-0.4.tar.gz
+wazuh_filebeat_module_package_name: wazuh-filebeat-0.5.tar.gz
 wazuh_filebeat_module_package_path: /tmp/
 wazuh_filebeat_module_destination: /usr/share/filebeat/module
 wazuh_filebeat_module_folder: /usr/share/filebeat/module/wazuh

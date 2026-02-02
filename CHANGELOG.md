@@ -1,6 +1,25 @@
 # Change Log
 All notable changes to this project will be documented in this file.
 
+## [4.14.2]
+
+### Added
+
+- Update Filebeat version ([#1873](https://github.com/wazuh/wazuh-ansible/pull/1873))
+- Add missing parameters SSL ciphers and protocols to opensearch.yml ([#1863](https://github.com/wazuh/wazuh-ansible/pull/1863))
+
+### Changed
+
+- None
+
+### Fixed
+
+- None
+
+### Deleted
+
+- Remove outdated parameters from opensearch template ([#1859](https://github.com/wazuh/wazuh-ansible/pull/1859))
+
 ## [4.14.1]
 
 ### Added
@@ -58,7 +77,7 @@ All notable changes to this project will be documented in this file.
 
 ### Fixed
 
-- Correct wazuh_filebeat_node_name in distributed playbook and readme ([#1778](https://github.com/wazuh/wazuh-ansible/pull/1778))
+- Correct filebeat_node_name in distributed playbook and readme ([#1778](https://github.com/wazuh/wazuh-ansible/pull/1778))
 - Fix invalid active response ca_store setting ([#1655](https://github.com/wazuh/wazuh-ansible/pull/1655))
 
 ### Deleted

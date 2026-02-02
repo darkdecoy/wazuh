@@ -1,6 +1,6 @@
 ---
 # Cluster Settings
-wazuh_indexer_version: 4.14.1
+wazuh_indexer_version: 4.14.2
 
 wazuh_single_node: false
 wazuh_indexer_node_name: node-1
