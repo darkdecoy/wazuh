@@ -13,7 +13,7 @@ wazuh_indexer_cluster_nodes:
   - 127.0.0.1
 
 # The Wazuh dashboard package repository
-dashboard_version: "4.14.2"
+wazuh_dashboard_version: "4.14.2"
 
 # API credentials
 wazuh_api_credentials:
