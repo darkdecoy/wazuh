@@ -92,7 +92,7 @@
 - name: Debian/Ubuntu | Install OpenScap
   ansible.builtin.apt:
     name:
-      - libopenscap8
+      - openscap-scanner
       - xsltproc
     state: present
     cache_valid_time: 3600
@@ -104,7 +104,7 @@
     - init
 
 - name: Debian/Ubuntu | Get OpenScap installed version
-  ansible.builtin.shell: "dpkg-query --showformat='${Version}' --show libopenscap8"
+  ansible.builtin.shell: "dpkg-query --showformat='${Version}' --show openscap-scanner"
   when: wazuh_manager_config.openscap.disable == 'no'
   register: openscap_version
   changed_when: false
