@@ -28,4 +28,4 @@ wazuh_dashboard_security: true
 wazuh_indexer_admin_password: changeme
 wazuh_dashboard_user: kibanaserver
 wazuh_dashboard_password: changeme
-wazuh_local_certs_path: "{{ playbook_dir }}/files/indexer/certificates"
+wazuh_local_certs_path: "{{ playbook_dir }}/indexer/certificates"
