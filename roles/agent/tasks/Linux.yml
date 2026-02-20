@@ -17,6 +17,7 @@
     name: wazuh-agent-{{ wazuh_agent_version }}
     state: present
     lock_timeout: '{{ wazuh_agent_yum_lock_timeout }}'
+  become: true
   when:
     - ansible_os_family|lower == "redhat"
     - not wazuh_custom_packages_installation_agent_enabled
@@ -28,6 +29,7 @@
     name: "wazuh-agent={{ wazuh_agent_version }}-*"
     state: present
     cache_valid_time: 3600
+  become: true
   when:
     - ansible_os_family|lower != "redhat"
     - not wazuh_custom_packages_installation_agent_enabled
@@ -39,10 +41,12 @@
   ansible.builtin.stat:
     path: "{{ wazuh_dir }}/etc/client.keys"
   register: client_keys_file
+  become: true
   tags:
     - config
 
 - name: Linux | Agent registration via authd
+  become: true
   when:
     - wazuh_agent_authd.enable | bool
     - wazuh_agent_config.enrollment.enabled != 'yes'
@@ -110,6 +114,7 @@
         - wazuh_agent_authd.registration_address is not none
 
 - name: Linux | Agent registration via rest-API
+  become: true
   when:
     - not ( wazuh_agent_authd.enable | bool )
     - wazuh_agent_config.enrollment.enabled != 'yes'
@@ -117,7 +122,6 @@
   tags:
     - config
     - api
-- name: Linux | Agent registration via rest-API
   block:
     - name: Establish target Wazuh Manager for registration task
       ansible.builtin.set_fact:
@@ -217,7 +221,7 @@
   when: wazuh_agent_config.enrollment.enabled == 'yes'
 
 - name: Linux | Ensure group "wazuh" exists
-  ansible.builtin.ansible.builtin.group:
+  ansible.builtin.group:
     name: wazuh
     state: present
   become: true
