@@ -148,10 +148,6 @@
   tags:
     - config
 
-- name: Include External Postfix Tasks
-  ansible.builtin.include_tasks: "postfix.yml"
-  when: wazuh_manager_external_email_smtp_enable
-
 - name: Copy wazuh healthcheck script
   ansible.builtin.copy:
     src: wazuh_healthcheck.sh
