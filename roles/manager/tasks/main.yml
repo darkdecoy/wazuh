@@ -341,43 +341,6 @@
   tags:
     - config
 
-- name: Create custom API user
-  tags:
-    - config_api_users
-  when:
-    - wazuh_api_users is defined
-    - wazuh_manager_config.cluster.node_type == "master"
-  block:
-    - name: Copy create_user script
-      ansible.builtin.copy:
-        src: create_user.py
-        dest: "{{ wazuh_dir }}/framework/scripts/create_user.py"
-        owner: root
-        group: wazuh
-        mode: "0644"
-
-    - name: Create admin.json
-      ansible.builtin.template:
-        src: templates/admin.json.j2
-        dest: "{{ wazuh_dir }}/api/configuration/admin.json"
-        owner: wazuh
-        group: wazuh
-        mode: "0644"
-      no_log: true
-
-    - name: Execute create_user script
-      ansible.builtin.script:
-        chdir: "{{ wazuh_dir }}/framework/scripts/"
-        cmd: create_user.py --username "{{ item.username }}" --password "{{ item.password }}"
-        executable: "{{ wazuh_dir }}/framework/python/bin/python3"
-      with_items:
-        - "{{ wazuh_api_users }}"
-
-    - name: Delete create_user script
-      ansible.builtin.file:
-        path: "{{ wazuh_dir }}/framework/scripts/create_user.py"
-        state: absent
-
 - name: Agentless Hosts & Passwd
   ansible.builtin.template:
     src: agentless.j2
