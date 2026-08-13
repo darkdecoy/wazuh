@@ -101,12 +101,9 @@
     name: filebeat
     state: started
     enabled: true
-  become: true
 
-- name: Remove Filebeat Repository
-  ansible.builtin.include_tasks: "RMRedHat.yml"
-  when: ansible_os_family == "RedHat"
+- include_tasks: "RMRedHat.yml"
+  when: ansible_facts.os_family == "RedHat"
 
-- name: Remove Filebeat Repository
-  ansible.builtin.include_tasks: "RMDebian.yml"
-  when: ansible_os_family == "Debian"
+- include_tasks: "RMDebian.yml"
+  when: ansible_facts.os_family == "Debian"
