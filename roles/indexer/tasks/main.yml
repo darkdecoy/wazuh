@@ -19,16 +19,9 @@
   when:
     - wazuh_generate_certs
 
-- name: Configure Wazuh Indexer
-  when: wazuh_perform_installation
-  block:
-    - name: RedHat/Centos | Install Wazuh Indexer
-      ansible.builtin.import_tasks: RedHat.yml
-      when: ansible_os_family == 'RedHat'
+      when: ansible_facts.os_family == 'RedHat'
 
-    - name: Debian/Ubuntu | Install Wazuh Indexer
-      ansible.builtin.import_tasks: Debian.yml
-      when: ansible_os_family == 'Debian'
+      when: ansible_facts.os_family == 'Debian'
 
     - name: Remove performance analyzer plugin from Wazuh indexer
       ansible.builtin.command: ./opensearch-plugin remove opensearch-performance-analyzer
@@ -117,7 +110,8 @@
       delay: 5
       tags: debug
       when:
-        - hostvars[inventory_hostname]['private_ip'] is not defined or not hostvars[inventory_hostname]['private_ip']
+        - hostvars[inventory_hostname]['private_ip'] is not defined or
+          (hostvars[inventory_hostname]['private_ip'] | length) == 0
 
     - name: Wait for Wazuh indexer API (Private IP)
       ansible.builtin.uri:
@@ -138,7 +132,8 @@
       delay: 5
       tags: debug
       when:
-        - hostvars[inventory_hostname]['private_ip'] is defined and hostvars[inventory_hostname]['private_ip']
+        - hostvars[inventory_hostname]['private_ip'] is defined and
+          (hostvars[inventory_hostname]['private_ip'] | length) > 0
 
     - name: Removing Red Hat Repository
       ansible.builtin.import_tasks: "RMRedHat.yml"

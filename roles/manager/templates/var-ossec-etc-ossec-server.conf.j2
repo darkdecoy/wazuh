@@ -441,7 +441,7 @@
   </localfile>
 {% endfor %}
 
-{% if ansible_os_family == "Debian" %}
+{% if ansible_facts.os_family == "Debian" %}
 {% for localfile in wazuh_manager_config.localfiles.debian %}
 
   <localfile>
@@ -480,7 +480,7 @@
 {% endfor %}
 {% endif -%}
 
-{% if ansible_os_family == "RedHat" %}
+{% if ansible_facts.os_family == "RedHat" %}
 {% for localfile in wazuh_manager_config.localfiles.centos %}
 
   <localfile>
