@@ -14,8 +14,12 @@
   ansible.builtin.include_vars: repo_staging.yml
   when: packages_repository == 'staging'
 
+- name: Setup Filebeat Repository
+  ansible.builtin.include_tasks: RedHat.yml
   when: ansible_facts.os_family == 'RedHat'
 
+- name: Setup Filebeat Repository
+  ansible.builtin.include_tasks: Debian.yml
   when: ansible_facts.os_family == 'Debian'
 
 - name: Install Filebeat | Redhat
@@ -35,8 +39,8 @@
     state: present
   register: install
   tags:
-    - install
-    - init
+  - install
+  - init
   until: "install is not failed"
   retries: 10
   delay: 10
@@ -98,8 +102,10 @@
     state: started
     enabled: true
 
-- include_tasks: "RMRedHat.yml"
+- name: Remove Filebeat Repository
+  ansible.builtin.include_tasks: "RMRedHat.yml"
   when: ansible_facts.os_family == "RedHat"
 
-- include_tasks: "RMDebian.yml"
+- name: Remove Filebeat Repository
+  ansible.builtin.include_tasks: "RMDebian.yml"
   when: ansible_facts.os_family == "Debian"

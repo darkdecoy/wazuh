@@ -14,13 +14,11 @@
   ansible.builtin.include_vars: repo_staging.yml
   when: packages_repository == 'staging'
 
-- name: Red Hat/Centos | Install Wazuh Dashboard
-  ansible.builtin.import_tasks: RedHat.yml
-  when: ansible_os_family == 'RedHat'
+- import_tasks: RedHat.yml
+  when: ansible_facts.os_family == 'RedHat'
 
-- name: Debian/Ubuntu | Install Wazuh Dashboard
-  ansible.builtin.import_tasks: Debian.yml
-  when: ansible_os_family == 'Debian'
+- import_tasks: Debian.yml
+  when: ansible_facts.os_family == 'Debian'
 
 - name: Remove Dashboard configuration file
   ansible.builtin.file:

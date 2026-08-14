@@ -375,9 +375,6 @@ The hereunder example playbook uses the `wazuh-ansible` role to provision a Wazu
               nodes:
                   - "{{ hostvars.manager.private_ip }}"
               hidden: 'no'
-        wazuh_api_users:
-          - username: custom-user
-            password: SecretPassword1!
 
     - hosts: worker01
       roles:
