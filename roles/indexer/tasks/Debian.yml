@@ -3,6 +3,7 @@
 - name: Update cache
   ansible.builtin.apt:
     update_cache: true
+  become: true
 
 - name: Install Wazuh indexer dependencies
   ansible.builtin.apt:
@@ -14,6 +15,7 @@
       - software-properties-common
       - gnupg
     state: present
+  become: true
 
 - name: Add Wazuh indexer repository
   block:
@@ -24,9 +26,11 @@
         owner: root
         group: root
         mode: "0660"
+      become: true
 
     - name: Import Wazuh repository GPG key
       ansible.builtin.command: "gpg --no-default-keyring --keyring gnupg-ring:{{ wazuh_repo.keyring_path }} --import {{ wazuh_repo.path }}"
+      become: true
       args:
         creates: "{{ wazuh_repo.keyring_path }}"
 
@@ -34,6 +38,7 @@
       ansible.builtin.file:
         path: "{{ wazuh_repo.keyring_path }}"
         mode: '0644'
+      become: true
 
     - name: Add Wazuh indexer repository
       ansible.builtin.apt_repository:
@@ -41,10 +46,12 @@
         state: present
         filename: 'wazuh-indexer'
         update_cache: true
+      become: true
 
 - name: Install Wazuh indexer
   ansible.builtin.apt:
     name: wazuh-indexer={{ wazuh_indexer_version }}-1
     state: present
   register: install
+  become: true
   tags: install

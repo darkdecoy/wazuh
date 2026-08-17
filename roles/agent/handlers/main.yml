@@ -4,6 +4,7 @@
     name: wazuh-agent
     state: restarted
     enabled: true
+  become: true
 
 - name: Windows | Restart Wazuh Agent
   ansible.windows.win_service:

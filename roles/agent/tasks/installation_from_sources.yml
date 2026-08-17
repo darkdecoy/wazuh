@@ -95,6 +95,7 @@
   become: true
   register: installation_result
   changed_when: installation_result == 0
+  become: true
   args:
     chdir: "/tmp/wazuh-{{ wazuh_agent_sources_installation.branch }}"
 

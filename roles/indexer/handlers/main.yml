@@ -3,3 +3,4 @@
   ansible.builtin.service:
     name: wazuh-indexer
     state: restarted
+  become: true

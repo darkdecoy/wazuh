@@ -9,6 +9,7 @@
     state: present
   register: filebeat_ca_packages_install
   until: filebeat_ca_packages_install is succeeded
+  become: true
 
 - name: Debian/Ubuntu | Download Filebeat apt key.
   ansible.builtin.get_url:
@@ -17,6 +18,7 @@
     owner: root
     group: root
     mode: "0660"
+  become: true
 
 - name: Import Filebeat GPG key
   ansible.builtin.command: "gpg --no-default-keyring --keyring gnupg-ring:{{ wazuh_repo.keyring_path }} --import {{ wazuh_repo.path }}"
@@ -27,6 +29,7 @@
   ansible.builtin.file:
     path: "{{ wazuh_repo.keyring_path }}"
     mode: '0644'
+  become: true
 
 - name: Debian/Ubuntu | Add Filebeat-oss repository.
   ansible.builtin.apt_repository:
@@ -34,3 +37,4 @@
     state: present
     update_cache: true
   changed_when: false
+  become: true

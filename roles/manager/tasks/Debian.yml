@@ -11,6 +11,7 @@
     install_recommends: false
   register: wazuh_manager_https_packages_installed
   until: wazuh_manager_https_packages_installed is succeeded
+  become: true
 
 - name: Debian/Ubuntu | Installing Wazuh repository key (Ubuntu 14)
   become: true
@@ -21,6 +22,7 @@
     # warn: false
     executable: /bin/bash
   changed_when: false
+  become: true
   when:
     - ansible_facts.distribution == "Ubuntu"
     - ansible_facts.distribution_major_version | int == 14
@@ -33,6 +35,7 @@
     owner: root
     group: root
     mode: "0660"
+  become: true
   when:
     - not (ansible_facts.distribution == "Ubuntu" and ansible_facts.distribution_major_version | int == 14)
     - not wazuh_custom_packages_installation_manager_enabled
@@ -40,6 +43,7 @@
 - name: Debian/Ubuntu | Import Wazuh GPG key
   ansible.builtin.command: ^
     "gpg --no-default-keyring --keyring gnupg-ring:{{ wazuh_manager_config.repo.keyring_path }} --import {{ wazuh_manager_config.repo.path }}"
+  become: true
   when:
     - not (ansible_facts.distribution == "Ubuntu" and ansible_facts.distribution_major_version | int == 14)
     - not wazuh_custom_packages_installation_manager_enabled
@@ -50,6 +54,7 @@
   ansible.builtin.file:
     path: "{{ wazuh_manager_config.repo.keyring_path }}"
     mode: '0644'
+  become: true
   when:
     - not (ansible_facts.distribution == "Ubuntu" and ansible_facts.distribution_major_version | int == 14)
     - not wazuh_custom_packages_installation_manager_enabled
@@ -61,6 +66,7 @@
     state: present
     update_cache: true
   changed_when: false
+  become: true
   when:
     - not wazuh_custom_packages_installation_manager_enabled
 
@@ -73,10 +79,12 @@
     repo: 'ppa:openjdk-r/ppa'
     state: present
     update_cache: true
+  become: true
   when:
     - (ansible_facts.distribution == "Ubuntu" and ansible_facts.distribution_major_version | int == 14)
 
 - name: Install OpenJDK
+  become: true
   when:
     - wazuh_manager_config.cis_cat.disable == 'no'
     - wazuh_manager_config.cis_cat.install_java == 'yes'
@@ -88,6 +96,7 @@
         name: openjdk-8-jre
         state: present
         cache_valid_time: 3600
+      become: true
 
 - name: Debian/Ubuntu | Install OpenScap
   ansible.builtin.apt:
@@ -99,6 +108,7 @@
     install_recommends: false
   register: wazuh_manager_openscap_installed
   until: wazuh_manager_openscap_installed is succeeded
+  become: true
   when: wazuh_manager_config.openscap.disable == 'no'
   tags:
     - init
@@ -108,6 +118,7 @@
   when: wazuh_manager_config.openscap.disable == 'no'
   register: openscap_version
   changed_when: false
+  become: true
   tags:
     - config
 
@@ -116,6 +127,7 @@
   when: wazuh_manager_config.openscap.disable == 'no'
   register: openscap_version_valid
   changed_when: false
+  become: true
   tags:
     - config
 
@@ -124,6 +136,7 @@
     name:
       - "wazuh-manager={{ wazuh_manager_version }}-*"
     state: present
+  become: true
   tags: init
   when:
     - not wazuh_custom_packages_installation_manager_enabled

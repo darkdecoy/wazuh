@@ -69,6 +69,7 @@
   become: true
   register: wazuh_agent_openscap_package_install
   until: wazuh_agent_openscap_package_install is succeeded
+  become: true
   when: wazuh_agent_config.openscap.disable == 'no'
   tags:
     - init
