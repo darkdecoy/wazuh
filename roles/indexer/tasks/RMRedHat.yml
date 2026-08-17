@@ -4,3 +4,4 @@
     name: wazuh_repo
     state: absent
   changed_when: false
+  become: true

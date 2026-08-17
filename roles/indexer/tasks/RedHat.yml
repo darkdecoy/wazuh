@@ -12,16 +12,18 @@
         gpgkey: "{{ wazuh_repo.gpg }}"
         gpgcheck: true
       changed_when: false
+      become: true
 
     - name: Amazon Linux | Configure system settings
       when:
-        - ansible_distribution == 'Amazon'
+        - ansible_facts.distribution == 'Amazon'
       block:
         - name: Install Amazon extras in Amazon Linux 2
           ansible.builtin.dnf:
             name: amazon-linux-extras
             state: present
             lock_timeout: 200
+          become: true
           when:
           - ansible_facts.distribution == 'Amazon'
           - ansible_facts.distribution_major_version == '2'
@@ -37,17 +39,14 @@
             mode: "0644"
           become: true
 
-      - ansible_facts.distribution == 'Amazon'
-
     - name: RedHat/CentOS/Fedora | Install Indexer dependencies
       ansible.builtin.dnf:
-        name: "{{ packages }}"
-        state: present
-        lock_timeout: 200
-      vars:
-        packages:
+        name:
           - wget
           - unzip
+        state: present
+        lock_timeout: 200
+      become: true
 
     - name: Install Wazuh indexer
       ansible.builtin.package:
@@ -55,3 +54,4 @@
         state: present
       register: install
       tags: install
+      become: true

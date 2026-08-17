@@ -19,8 +19,11 @@
   when:
     - wazuh_generate_certs
 
+- block:
+    - import_tasks: RedHat.yml
       when: ansible_facts.os_family == 'RedHat'
 
+    - import_tasks: Debian.yml
       when: ansible_facts.os_family == 'Debian'
 
     - name: Remove performance analyzer plugin from Wazuh indexer
@@ -49,6 +52,7 @@
         group: wazuh-indexer
         mode: "0640"
         force: true
+      become: true
       tags: install
 
     - name: Run Security Actions
@@ -64,6 +68,7 @@
         group: wazuh-indexer
         mode: "0644"
         force: true
+      become: true
       notify: Restart wazuh-indexer
       tags: install
 
@@ -85,6 +90,7 @@
       ansible.builtin.file:
         path: "{{ item.path }}"
         state: absent
+      become: true
       with_items: "{{ files_to_delete.files }}"
 
     - name: Ensure Wazuh indexer started and enabled
@@ -92,6 +98,7 @@
         name: wazuh-indexer
         enabled: true
         state: started
+      become: true
 
     - name: Wait for Wazuh indexer API
       ansible.builtin.uri:
@@ -137,7 +144,7 @@
 
     - name: Removing Red Hat Repository
       ansible.builtin.import_tasks: "RMRedHat.yml"
-      when: ansible_os_family == "RedHat"
+      when: ansible_facts["os_family"] == "RedHat"
 
     - name: Reload systemd configuration
       ansible.builtin.systemd:

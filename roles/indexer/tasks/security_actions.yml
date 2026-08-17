@@ -17,6 +17,7 @@
     owner: wazuh-indexer
     group: wazuh-indexer
     mode: "0500"
+  become: true
 
 - name: Copy the node & admin certificates to Wazuh indexer cluster
   ansible.builtin.copy:
@@ -25,6 +26,7 @@
     owner: wazuh-indexer
     group: wazuh-indexer
     mode: "0400"
+  become: true
   with_items:
     - root-ca.pem
     - "{{ wazuh_indexer_node_name }}-key.pem"
@@ -36,12 +38,14 @@
   ansible.builtin.systemd:
     name: wazuh-indexer
     state: restarted
+  become: true
 
 - name: Copy the Opensearch security internal users template
   ansible.builtin.template:
     src: "templates/internal_users.yml.j2"
     dest: "{{ wazuh_indexer_sec_plugin_conf_path }}/internal_users.yml"
     mode: "0644"
+  become: true
   run_once: true
 
 - name: Setting Up Admin User
@@ -55,12 +59,14 @@
       register: wazuh_indexer_admin_password_hashed
       no_log: '{{ wazuh_indexer_nolog_sensible | bool }}'
       changed_when: false
+      become: true
 
     - name: Set the Admin user password
       ansible.builtin.replace:
         path: "{{ wazuh_indexer_sec_plugin_conf_path }}/internal_users.yml"
         regexp: '(?<=admin:\n  hash: )(.*)(?=)'
         replace: "{{ indexer_password_hash | quote }}"
+      become: true
       vars:
         indexer_password_hash: "{{ wazuh_indexer_admin_password_hashed.stdout_lines | last }}"
 
@@ -72,12 +78,14 @@
       register: indexer_kibanaserver_password_hashed
       no_log: '{{ wazuh_indexer_nolog_sensible | bool }}'
       changed_when: false
+      become: true
 
     - name: Set the kibanaserver user password
       ansible.builtin.replace:
         path: "{{ wazuh_indexer_sec_plugin_conf_path }}/internal_users.yml"
         regexp: '(?<=kibanaserver:\n  hash: )(.*)(?=)'
         replace: "{{ indexer_password_hash | quote }}"
+      become: true
       vars:
         indexer_password_hash: "{{ indexer_kibanaserver_password_hashed.stdout_lines | last }}"
 
@@ -98,6 +106,7 @@
       register: result
       until: result.rc == 0
       changed_when: false
+      become: true
 
 - name: Create custom user
   ansible.builtin.uri:
@@ -117,6 +126,7 @@
     timeout: 4
   register: result
   until: result.status in [200,201,401]
+  become: true
   when:
     - wazuh_indexer_custom_user is defined and wazuh_indexer_custom_user != ""
     - inventory_hostname == ansible_play_hosts[0]
