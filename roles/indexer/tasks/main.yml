@@ -19,11 +19,14 @@
   when:
     - wazuh_generate_certs
 
-- block:
-    - import_tasks: RedHat.yml
+- name: Configure Wazuh Indexer
+  block:
+    - name: RedHat/Centos | Install Wazuh Indexer
+      ansible.builtin.import_tasks: RedHat.yml
       when: ansible_facts.os_family == 'RedHat'
 
-    - import_tasks: Debian.yml
+    - name: Debian/Ubuntu | Install Wazuh Indexer
+      ansible.builtin.import_tasks: Debian.yml
       when: ansible_facts.os_family == 'Debian'
 
     - name: Remove performance analyzer plugin from Wazuh indexer
@@ -42,6 +45,7 @@
       ansible.builtin.file:
         path: "{{ wazuh_indexer_conf_path }}/opensearch.yml"
         state: absent
+      become: true
       tags: install
 
     - name: Copy Opensearch Configuration File
@@ -85,6 +89,7 @@
         paths: "{{ wazuh_indexer_index_path }}"
         patterns: "*"
       register: files_to_delete
+      become: true
 
     - name: Remove Index Files
       ansible.builtin.file:

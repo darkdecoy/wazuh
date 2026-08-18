@@ -1,10 +1,11 @@
 ---
-  - name: Check packages
-    ansible.builtin.shell: |
-      ./check_packages.sh {{ wazuh_version }}
-    args:
-      # warn: false
-      executable: /bin/bash
-      chdir: "{{ role_path }}/scripts/"
-    delegate_to: localhost
-    become: false
+- name: Check packages
+  ansible.builtin.shell: |
+    ./check_packages.sh {{ wazuh_version }}
+  changed_when: false
+  args:
+    # warn: false
+    executable: /bin/bash
+    chdir: "{{ role_path }}/scripts/"
+  delegate_to: localhost
+  become: false

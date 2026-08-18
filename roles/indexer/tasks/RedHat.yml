@@ -25,8 +25,8 @@
             lock_timeout: 200
           become: true
           when:
-          - ansible_facts.distribution == 'Amazon'
-          - ansible_facts.distribution_major_version == '2'
+            - ansible_facts.distribution == 'Amazon'
+            - ansible_facts.distribution_major_version == '2'
 
         - name: Configure vm.max_map_count
           ansible.builtin.lineinfile:

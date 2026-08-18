@@ -1,20 +1,23 @@
 ---
-- include_tasks:
+- name: Linux CentOS/RedHat | Setup Package Repository
+  ansible.builtin.include_tasks:
     file: "RedHat.yml"
     apply:
-      become: yes
+      become: true
   when: ansible_facts.os_family == "RedHat"
 
-- include_tasks:
+- name: Linux Debian | Setup Package Repository
+  ansible.builtin.include_tasks:
     file: "Debian.yml"
     apply:
-      become: yes
+      become: true
   when: ansible_facts.os_family == "Debian"
 
-- include_tasks:
+- name: Linux | Setup Custom Package Source
+  ansible.builtin.include_tasks:
     file: "installation_from_custom_packages.yml"
     apply:
-      become: yes
+      become: true
   when:
     - wazuh_custom_packages_installation_agent_enabled
 
@@ -106,6 +109,7 @@
         -G "{{ wazuh_agent_authd.groups | join(',') }}"
         {% endif %}
       register: agent_auth_output
+      changed_when: false
       notify: Restart wazuh-agent
       become: true
       vars:
@@ -219,6 +223,7 @@
         OSSEC_AGENT_KEY: '{{ api_agent_post.json.data.key }}'
         OSSEC_ACTION_CONFIRMED: y
       register: manage_agents_output
+      changed_when: true
       become: true
       vars:
         agent_name: '{{ target_manager.agent_name | default(ansible_facts.hostname) }}'
@@ -284,16 +289,18 @@
   become: true
   tags: config
 
-- ansible.builtin.include_tasks:
+- name: Linux CentOS/RedHat | Remove Package Repository
+  ansible.builtin.include_tasks:
     file: "RMRedHat.yml"
     apply:
-      become: yes
+      become: true
   when:
     - ansible_facts.os_family == "RedHat"
 
-- ansible.builtin.include_tasks:
+- name: Linux Debian | Remove Package Repository
+  ansible.builtin.include_tasks:
     file: "RMDebian.yml"
     apply:
-      become: yes
+      become: true
   when:
     - ansible_facts.os_family == "Debian"

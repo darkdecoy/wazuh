@@ -12,6 +12,7 @@
     url: "{{ wazuh_cmake_download_url }}"
     dest: "/tmp/cmake-{{ wazuh_cmake_version }}.tar.gz"
     mode: "0770"
+  become: true
   register: cmake_download
 
 - name: Unpack CMake
@@ -19,12 +20,14 @@
     copy: false
     dest: /tmp/
     src: "{{ cmake_download.dest }}"
+  become: true
   when: cmake_download.changed
   register: cmake_unpack
 
 - name: Configure CMake
   ansible.builtin.command: # noqa no-handler
     cmd: "./bootstrap"
+  become: true
   args:
     chdir: "/tmp/cmake-{{ wazuh_cmake_version }}"
   changed_when: false
@@ -34,6 +37,7 @@
 - name: Install CMake
   ansible.builtin.shell: # noqa no-handler
     cmd: make && make install
+  become: true
   args:
     chdir: "/tmp/cmake-{{ wazuh_cmake_version }}"
   changed_when: false
@@ -43,3 +47,4 @@
   ansible.builtin.file:
     state: absent
     path: "/tmp/cmake-{{ wazuh_cmake_version }}"
+  become: true

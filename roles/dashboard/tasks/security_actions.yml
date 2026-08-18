@@ -9,6 +9,7 @@
         owner: wazuh-dashboard
         group: wazuh-dashboard
         mode: "0500"
+      become: true
 
     - name: Copy the certificates from local to the Wazuh dashboard instance
       ansible.builtin.copy:
@@ -17,6 +18,7 @@
         owner: wazuh-dashboard
         group: wazuh-dashboard
         mode: "0400"
+      become: true
       with_items:
         - "root-ca.pem"
         - "{{ wazuh_dashboard_node_name }}-key.pem"

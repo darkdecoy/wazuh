@@ -3,7 +3,7 @@
 - name: "Install dependencies"
   block:
     - name: "Refresh APT cache on Debian"
-      apt:
+      ansible.builtin.apt:
         update_cache: true
       when: ansible_facts.os_family == "Debian"
       register: package_status
@@ -65,10 +65,12 @@
     config_layer: '{{ wazuh_manager_config | default({}) }}'
   when: wazuh_manager_config_overlay | bool
 
-- include_tasks: "RedHat.yml"
+- name: RedHat/Centos | Install Wazuh Manager
+  ansible.builtin.include_tasks: "RedHat.yml"
   when: (ansible_facts.os_family == "RedHat" and ansible_facts.distribution_major_version|int > 5) or (ansible_facts.os_family  == "RedHat" and ansible_facts.distribution == "Amazon")
 
-- include_tasks: "Debian.yml"
+- name: Debian/Ubuntu | Install Wazuh Manager
+  ansible.builtin.include_tasks: "Debian.yml"
   when: ansible_facts.os_family == "Debian"
 
 - name: Generate the wazuh-keystore (username)

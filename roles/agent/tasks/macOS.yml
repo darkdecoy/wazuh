@@ -17,12 +17,14 @@
   ansible.builtin.stat:
     path: "{{ wazuh_macos_config.download_dir }}{{ wazuh_macos_package_name }}"
   register: wazuh_package_downloaded
+  become: true
 
 - name: macOS | Download Wazuh Agent package
   ansible.builtin.get_url: # noqa risky-file-permissions
     url: "{{ wazuh_macos_package_url }}"
     dest: "{{ wazuh_macos_config.download_dir }}"
   register: download_result
+  become: true
   when:
     - not wazuh_package_downloaded.stat.exists
 
@@ -30,16 +32,19 @@
   ansible.builtin.stat:
     path: "{{ wazuh_macos_config.install_dir }}"
   register: wazuh_installed
+  become: true
 
 - name: macOS | Install Agent if not already installed
   ansible.builtin.command: "installer -pkg {{ wazuh_macos_config.download_dir }}{{ wazuh_macos_package_name }} -target /"
   register: install_result
   changed_when: false
+  become: true
 
 - name: macOS | Check if client.keys exists
   ansible.builtin.stat:
     path: "{{ wazuh_macos_config.install_dir }}/etc/client.keys"
   register: client_keys_file
+  become: true
   tags:
     - config
 
@@ -66,6 +71,8 @@
         -G "{{ wazuh_agent_authd.groups | join(',') }}"
         {% endif %}
       register: agent_auth_output
+      changed_when: false
+      become: true
       notify: macOS | Restart Wazuh Agent
       vars:
         agent_name: "{% if single_agent_name is defined %}{{ single_agent_name }}{% else %}{{ ansible_facts.hostname }}{% endif %}"
@@ -77,6 +84,7 @@
       ansible.builtin.shell: # noqa risky-shell-pipe
         cmd: sh -c "echo '{{ agent_auth_output.stdout }} {{ agent_auth_output.stderr }}' | grep 'Valid key received'"
       changed_when: false
+      become: true
       when:
         - not client_keys_file.stat.exists or client_keys_file.stat.size == 0
         - wazuh_agent_authd.registration_address is not none
@@ -175,6 +183,8 @@
         OSSEC_AGENT_KEY: '{{ api_agent_post.json.data.key }}'
         OSSEC_ACTION_CONFIRMED: y
       register: manage_agents_output
+      changed_when: false
+      become: true
       vars:
         agent_name: '{{ target_manager.agent_name | default(ansible_facts.hostname) }}'
       notify: macOS | Restart Wazuh Agent
@@ -188,6 +198,7 @@
   ansible.builtin.group:
     name: wazuh
     state: present
+  become: true
 
 - name: macOS | Installing agent configuration (ossec.conf)
   ansible.builtin.template:
@@ -196,6 +207,7 @@
     owner: root
     group: wazuh
     mode: "0644"
+  become: true
   notify: macOS | Restart Wazuh Agent
   tags:
     - init
@@ -208,6 +220,7 @@
     owner: root
     group: wazuh
     mode: "0640"
+  become: true
   notify: macOS | Restart Wazuh Agent
   tags:
     - init
@@ -220,6 +233,7 @@
     owner: wazuh
     group: wazuh
     mode: "0640"
+  become: true
   when:
     - wazuh_agent_config.enrollment.enabled == 'yes'
     - wazuh_agent_config.enrollment.authorization_pass_path_macos | length > 0
@@ -231,3 +245,4 @@
   ansible.builtin.file:
     path: "{{ wazuh_macos_config.download_dir }}{{ wazuh_macos_package_name }}"
     state: absent
+  become: true

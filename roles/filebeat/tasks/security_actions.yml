@@ -3,7 +3,6 @@
     - security
   when:
     - wazuh_filebeat_security
-
   block:
     - name: Ensure Filebeat SSL key pair directory exists.
       ansible.builtin.file:
@@ -12,6 +11,7 @@
         owner: root
         group: root
         mode: "0500"
+      become: true
 
     - name: Copy the certificates from local to the Manager instance
       ansible.builtin.copy:
@@ -20,6 +20,7 @@
         owner: root
         group: root
         mode: "0400"
+      become: true
       with_items:
         - "{{ wazuh_filebeat_node_name }}-key.pem"
         - "{{ wazuh_filebeat_node_name }}.pem"

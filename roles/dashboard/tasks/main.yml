@@ -14,10 +14,12 @@
   ansible.builtin.include_vars: repo_staging.yml
   when: packages_repository == 'staging'
 
-- import_tasks: RedHat.yml
+- name: Red Hat/Centos | Install Wazuh Dashboard
+  ansible.builtin.import_tasks: RedHat.yml
   when: ansible_facts.os_family == 'RedHat'
 
-- import_tasks: Debian.yml
+- name: Debian/Ubuntu | Install Wazuh Dashboard
+  ansible.builtin.import_tasks: Debian.yml
   when: ansible_facts.os_family == 'Debian'
 
 - name: Remove Dashboard configuration file
@@ -25,6 +27,7 @@
     # noqa no-handler
     path: "{{ wazuh_dashboard_conf_path }}/opensearch_dashboards.yml"
     state: absent
+  become: true
   tags: install
 
 - name: Run Security Actions
@@ -38,6 +41,7 @@
     owner: wazuh-dashboard
     mode: "0640"
     force: true
+  become: true
   notify: Restart wazuh-dashboard
   tags:
     - install
@@ -50,6 +54,7 @@
     owner: wazuh-dashboard
     group: wazuh-dashboard
     recurse: true
+  become: true
 
 - name: Wait for Wazuh-Indexer port
   ansible.builtin.wait_for:
@@ -68,6 +73,7 @@
     password: "{{ wazuh_indexer_admin_password }}"
     validate_certs: false
     status_code: 200, 404
+  become: true
 
 - name: Create Wazuh Plugin config directory
   ansible.builtin.file:
@@ -78,6 +84,7 @@
     group: wazuh-dashboard
     mode: "0751"
   changed_when: false
+  become: true
 
 - name: Configure Wazuh Dashboard Plugin
   ansible.builtin.template:
@@ -87,6 +94,7 @@
     group: wazuh-dashboard
     mode: "0751"
   changed_when: false
+  become: true
 
 - name: Configure opensearch.password in opensearch_dashboards.keystore
   ansible.builtin.shell: |
@@ -102,6 +110,8 @@
     name: wazuh-dashboard
     enabled: true
     state: started
+  become: true
 
-- import_tasks: RMRedHat.yml
+- name: Remove Red Hat repository
+  ansible.builtin.import_tasks: RMRedHat.yml
   when: ansible_facts.os_family == 'RedHat'

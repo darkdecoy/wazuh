@@ -50,6 +50,7 @@
 
 - name: RedHat 6 | Enabling Red Hat Software Collections (RHSCL)
   ansible.builtin.command: yum-config-manager --enable {{ item }}
+  changed_when: false
   with_items:
     - rhui-REGION-rhel-server-rhscl
     - rhel-server-rhscl-6-rpms

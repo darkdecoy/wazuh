@@ -10,6 +10,7 @@
         owner: root
         group: root
         mode: "0400"
+      become: true
       notify: Restart filebeat
 
     - name: Fetch latest Wazuh alerts template
@@ -19,4 +20,5 @@
         owner: root
         group: root
         mode: "0400"
+      become: true
       notify: Restart filebeat

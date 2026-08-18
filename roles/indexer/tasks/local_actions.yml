@@ -23,17 +23,20 @@
         path: "{{ wazuh_local_certs_path }}"
         mode: "0755"
         state: directory
+      become: true
 
     - name: Local action | Check that the generation tool exists
       ansible.builtin.stat:
         path: "{{ wazuh_local_certs_path }}/wazuh-certs-tool.sh"
       register: tool_package
+      become: true
 
     - name: Local action | Download certificates generation tool
       ansible.builtin.get_url:
         url: "{{ certs_gen_tool_url }}"
         dest: "{{ wazuh_local_certs_path }}/wazuh-certs-tool.sh"
         mode: "0770"
+      become: true
       when: not tool_package.stat.exists
 
     - name: Local action | Prepare the certificates generation template file
@@ -42,8 +45,10 @@
         dest: "{{ wazuh_local_certs_path }}/config.yml"
         mode: "0644"
       register: tlsconfig_template
+      become: true
 
     - name: Local action | Generate the node & admin certificates in local
       ansible.builtin.command: >-
         bash {{ wazuh_local_certs_path }}/wazuh-certs-tool.sh -A
       changed_when: false
+      become: true

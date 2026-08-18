@@ -14,7 +14,6 @@
   become: true
 
 - name: Debian/Ubuntu | Installing Wazuh repository key (Ubuntu 14)
-  become: true
   ansible.builtin.shell: |
     set -o pipefail
     curl -s {{ wazuh_manager_config.repo.gpg }} | apt-key add -

@@ -10,6 +10,7 @@
         baseurl: "{{ wazuh_repo.yum }}"
         gpgkey: "{{ wazuh_repo.gpg }}"
         gpgcheck: true
+      become: true
 
     - name: Install Wazuh dashboard
       ansible.builtin.package:
@@ -17,3 +18,4 @@
         state: present
         update_cache: true
       register: install
+      become: true

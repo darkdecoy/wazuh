@@ -22,6 +22,7 @@
 
 - name: Import Filebeat GPG key
   ansible.builtin.command: "gpg --no-default-keyring --keyring gnupg-ring:{{ wazuh_repo.keyring_path }} --import {{ wazuh_repo.path }}"
+  become: true
   args:
     creates: "{{ wazuh_repo.keyring_path }}"
 

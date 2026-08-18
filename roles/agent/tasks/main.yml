@@ -1,5 +1,4 @@
 ---
-
 - name: Include Repository Variables
   ansible.builtin.include_vars: repo_vars.yml
 
@@ -30,12 +29,12 @@
   ansible.builtin.include_tasks:
     file: "Linux.yml"
     apply:
-      become: yes
+      become: true
   when: ansible_facts.system == "Linux"
 
 - name: Install macOS Agent
   ansible.builtin.include_tasks:
     file: "macOS.yml"
     apply:
-      become: yes
+      become: true
   when: ansible_facts.system == "Darwin"
